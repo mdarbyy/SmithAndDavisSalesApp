@@ -13,8 +13,7 @@ class SalesPeopleController < ApplicationController
   # GET /sales_people/1 or /sales_people/1.json
   def show
     @sales_records = @sales_person.sales_records.order(id: :desc)
-    @total_records = SalesRecord.where(sales_person_id: @sales_person.id).count
-
+    
     respond_to do |format|
       format.html
       format.js
