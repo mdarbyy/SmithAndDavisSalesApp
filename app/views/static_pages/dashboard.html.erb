@@ -28,7 +28,37 @@
     </div>
   </div>
 <% else %>
-	<div class="container-fluid">
+	
+  <div class="modal fade" id="totalSalesModal" tabindex="-1" aria-labelledby="totalSalesModalLabel" aria-hidden="true">
+		<div class="modal-dialog custom-modal">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="totalSalesModalLabel"><b><span id="salesPersonName"></span></b></h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="scrollable-table show-scrollbar">
+						<table class="table content" id="totalSalesModalTable">
+							<thead>
+								<tr>
+									<th class="stick" scope="col">Sell Date</th>
+                  <th class="stick" scope="col">Items Sold</th>
+									<th class="stick" scope="col">Amount Sold</th>
+                  <th class="stick" scope="col">Sales Floor Hours</th>
+                  <th class="stick" scope="col">Daily Average</th>
+                  <th class="stick" scope="col">Project Hours</th>
+								</tr>
+							</thead>
+							<tbody id="totalSalesModalTableBody">
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+  
+  <div class="container-fluid">
     <div class="row main-content-row">
       <div class="col-12 col-md-3 left-col">
         <div class="card mb-3 p-4">
@@ -44,7 +74,7 @@
               </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-2">
               <%= form.label :end_date, "End Date", class: "form-label" %>
               <div class="input-group">
                 <%= form.text_field :end_date, class: "form-control datepicker", required: true, value: (params[:end_date].presence || Date.current.strftime("%m/%d/%Y")) %>
@@ -76,7 +106,7 @@
           </div>
 
           <div class="mb-3 d-flex flex-column align-items-center">
-            <select id="sales-person-filter"
+            <select id="sell-date-filter"
               class="selectpicker btn-secondary filter-select"
               multiple
               data-actions-box="true"
@@ -102,4 +132,380 @@
       </div>
     </div>
   </div>
+<% end %>
+
+<% if @start_date.present? and @end_date.present? %>
+  <script>
+		$(document).ready(function() {
+
+      function updateFilterSection() {
+        const card = document.getElementById("filterCard");
+        const selects = document.querySelectorAll('.filter-select');
+        const screenHeight = window.innerHeight;
+
+        selects.forEach(select => {
+          select.setAttribute('data-dropup-auto', 'false');
+          
+          // Save desired direction into dataset for later
+          if (screenHeight <= 900) {
+            select.classList.add('dropup');
+          } else {
+            select.classList.remove('dropup');
+            select.dataset.forceDirection = 'down';
+          }
+        });
+      }
+
+      $(document).on('show.bs.select', '.filter-select', function () {
+        const wrapper = $(this).closest('.bootstrap-select');
+        const direction = this.dataset.forceDirection;
+        if(direction === 'down'){
+          wrapper.removeClass('dropup').addClass('dropdown');
+        }
+      });
+
+      window.addEventListener('resize', updateFilterSection);
+
+      updateFilterSection();
+
+      console.log("Height: " + window.innerHeight);
+      
+      const salesRecords = <%= raw @sales_records.to_json %>;
+			const salesPeople = <%= raw @sales_people.to_json %>;
+			console.log("Sales Records:", salesRecords);
+			console.log("Sales People:", salesPeople);
+			
+			const salesPersonIdToName = {};
+			salesPeople.forEach(sp => {
+				const name = `${sp.first_name} ${sp.last_name}`.trim().replace(/\s+/g, ' ');
+				salesPersonIdToName[sp.id] = name;
+			});
+      
+      function addPadding(row){
+        row.style.paddingTop = "10px";
+        row.style.paddingBottom = "10px";
+        return row;
+      }
+      
+      function getFilteredSalesRecords() {
+        const selectedSalesPersonIds = $('#sales-person-filter').val() || [];
+        const selectedSellDates = $('#sell-date-filter').val() || [];
+        
+        const filteredRecords = salesRecords.filter(record =>
+          selectedSalesPersonIds.includes(String(record.sales_person_id)) &&
+          selectedSellDates.includes(record.sell_date)
+        );
+
+        return filteredRecords;
+      }
+      
+      function populateSalesPersonSelect() {
+				let select = $('#sales-person-filter');
+				select.find('option').remove();
+
+				const optionsHtml = Object.entries(salesPersonIdToName)
+        .sort((a, b) => a[1].localeCompare(b[1]))
+        .map(([id, name]) => new Option(name, id, true, true).outerHTML)
+        .join('');
+
+				select.html(optionsHtml);
+				select.selectpicker('destroy');
+				select.selectpicker();
+			}
+
+      function populateSellDateSelect() {
+        const select = $('#sell-date-filter');
+        select.find('option').remove();
+
+        const uniqueDates = [...new Set(salesRecords.map(r => r.sell_date))].sort();
+
+        const optionsHtml = uniqueDates.map(dateStr => {
+          const formattedDate = luxon.DateTime.fromISO(dateStr).toFormat('MM/dd/yyyy');
+          return new Option(formattedDate, dateStr, true, true).outerHTML;
+        }).join('');
+
+        select.html(optionsHtml);
+        select.selectpicker('destroy');
+        select.selectpicker();
+      }
+
+      function processSalesRecords(){
+        console.log("Building chart.");
+        const filteredRecords = getFilteredSalesRecords();
+        const totalsByPerson = {};
+        const grandTotals = {
+          amountSold: 0,
+          itemsSold: 0,
+          projectHours: 0,
+          salesFloorHours: 0,
+          avgPerHour: 0
+        };
+        
+        filteredRecords.forEach(record => {
+          const personId = record.sales_person_id;
+          const personName = salesPersonIdToName[personId];
+          const sellDate = record.sell_date;
+
+          if (!totalsByPerson[personId]) totalsByPerson[personId] = { name: personName,
+          records: {},
+            totals: {
+              amountSold: 0,
+              itemsSold: 0,
+              projectHours: 0,
+              salesFloorHours: 0
+            },
+            avgPerHour: 0
+          };
+
+          const amountSold = Number(record.amount_sold);
+          const itemsSold = Number(record.items_sold);
+          const projectHours = Number(record.project_hours);
+          const salesFloorHours = Number(record.sales_floor_hours);
+    
+          totalsByPerson[personId].records[sellDate] = {
+            amountSold,
+            itemsSold,
+            projectHours,
+            salesFloorHours
+          };
+
+          totalsByPerson[personId].totals.amountSold += amountSold;
+          totalsByPerson[personId].totals.itemsSold += itemsSold;
+          totalsByPerson[personId].totals.projectHours += projectHours;
+          totalsByPerson[personId].totals.salesFloorHours += salesFloorHours;
+          
+          grandTotals.amountSold += amountSold;
+          grandTotals.itemsSold += itemsSold;
+          grandTotals.projectHours += projectHours;
+          grandTotals.salesFloorHours += salesFloorHours;
+        });
+
+        Object.values(totalsByPerson).forEach(person => {
+          const totals = person.totals;
+          person.avgPerHour =
+            totals.salesFloorHours > 0
+              ? Number((totals.amountSold / totals.salesFloorHours).toFixed(2))
+              : 0;
+        });
+
+        grandTotals.avgPerHour = grandTotals.salesFloorHours > 0
+        ? Number((grandTotals.amountSold / grandTotals.salesFloorHours).toFixed(2))
+        : 0;
+
+        console.log("Totals by Person:", totalsByPerson);
+        console.log("Grand Totals:", grandTotals);
+
+        const filteredData = Object.values(totalsByPerson).map(p => ({
+          name: p.name,
+          totalSales: p.totals.amountSold,
+          totalProjectHours: p.totals.projectHours,
+          totalSalesHours: p.totals.salesFloorHours,
+          numberOfSales: p.totals.itemsSold,
+          avgPerHour: p.avgPerHour
+        })).sort((a, b) => b.totalSales - a.totalSales);
+
+        const categories = filteredData.map(p => p.name);
+        const data = filteredData.map(p => ({
+          y: p.totalSales,
+          custom: {
+            project_hours: p.totalProjectHours,
+            number_of_sales: p.numberOfSales,
+            sales_hours: p.totalSalesHours,
+            avg: p.avgPerHour
+          }
+        }));
+
+        function showTotalSalesForClickedPerson(clickedName)
+        {
+          const salesPersonId = Object.keys(salesPersonIdToName).find(
+            id => salesPersonIdToName[id] === clickedName
+          );
+
+          const personData = totalsByPerson[salesPersonId];
+
+          if (!personData) return;
+
+          const recordsByDate = personData.records;
+          const tbody = document.querySelector('#totalSalesModalTableBody');
+          tbody.innerHTML = '';
+
+          document.getElementById('salesPersonName').textContent = clickedName;
+          
+          const sortedRecords = Object.entries(personData.records)
+          .sort(([dateA], [dateB]) => new Date(dateA) - new Date(dateB));
+
+          sortedRecords.forEach(([isoDate, record]) => {
+            const formattedDate = luxon.DateTime.fromISO(isoDate).toFormat('MM/dd/yyyy');
+            const dailyTotal = record.amountSold;
+            const itemsSold = record.itemsSold;
+            const dailyProjectHours = record.projectHours;
+            const dailySalesHours = record.salesFloorHours;
+            const dailyAvg = dailySalesHours > 0 && dailyTotal > 0 ? (dailyTotal / dailySalesHours).toFixed(2) : 0;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${formattedDate}</td>
+              <td>${itemsSold}</td>
+              <td>$${dailyTotal.toLocaleString()}</td>
+              <td>${dailySalesHours}</td>
+              <td>$${dailyAvg}</td>
+              <td>${dailyProjectHours}</td>
+            `;
+            tbody.appendChild(row);
+          });
+
+          // Only show totals if more than one unique date
+          if (sortedRecords.length > 1) {
+            const overallAvg = personData.totals.salesFloorHours > 0 ? (personData.totals.amountSold / personData.totals.salesFloorHours).toFixed(2) : 0;
+
+            let spaceRowBefore = document.createElement('tr');
+            spaceRowBefore.innerHTML = `
+            <td colspan="6"></td>
+            `;
+            tbody.appendChild(spaceRowBefore);
+
+            const totalRow = document.createElement('tr');
+            totalRow.innerHTML = `
+              <td><strong>Grand Total</strong></td>
+              <td><strong>${personData.totals.itemsSold}</strong></td>
+              <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
+              <td><strong>${personData.totals.salesFloorHours}</strong></td>
+              <td><strong>$${personData.avgPerHour}</strong></td>
+              <td><strong>${personData.totals.projectHours}</strong></td>
+            `;
+            tbody.appendChild(totalRow);
+            addPadding(totalRow);
+
+            let spaceRowAfter = document.createElement('tr');
+            spaceRowAfter.innerHTML = `
+            <td colspan="6"></td>
+            `;
+            tbody.appendChild(spaceRowAfter);
+          }
+
+          const modal = new bootstrap.Modal(document.getElementById('totalSalesModal'));
+          modal.show();
+        }
+        
+        Highcharts.chart('total-sales-chart', {
+					chart: {
+						type: 'column',
+            marginTop: 130,
+            scrollablePlotArea: {
+              minWidth: categories.length * 100,
+              scrollPositionX: 1
+            }
+					},
+					title: {
+            useHTML: true,
+						text: 
+            `<div style="text-align: center;">
+              <div style="font-size: 22px;">
+                <% if @start_date == @end_date %>
+                  Total Sales for <%= @start_date.strftime("%m/%d/%Y") %>
+                <% else %>
+                  Total Sales from <%= @start_date.strftime("%m/%d/%Y") %> to <%= @end_date.strftime("%m/%d/%Y") %>
+                <% end %>
+              </div>
+            </div>
+            `
+					},
+					subtitle: {
+						useHTML: true,
+            text: `
+              <div style="text-align: center;">
+                <div style="font-size: 18px; font-weight: bold; color: #333;">
+                  $${grandTotals.amountSold.toLocaleString()}
+                </div>
+                <div style="font-size: 14px; font-weight: bold; color: #777;">
+                  ${grandTotals.itemsSold.toLocaleString()} sale${grandTotals.itemsSold === 1 ? '' : 's'}
+                </div>
+              </div>
+            `
+					},
+					xAxis: {
+						categories: categories,
+						title: { text: 'Sales People' },
+					},
+					yAxis: {
+						min: 0,
+						title: { text: 'Total Sales ($)' }
+					},
+					tooltip: {
+						enabled: false
+					},
+					plotOptions: {
+						column: {
+							cursor: 'pointer',
+							point: {
+								events: {
+									click: function() {
+										showTotalSalesForClickedPerson(this.category);
+									}
+								}
+							},
+							dataLabels: {
+                enabled: true,
+                inside: false,
+                crop: false,
+                overflow: 'none',
+                useHTML: true,
+                formatter: function() {
+                  const sales = '$' + Highcharts.numberFormat(this.y, 0, '.', ',');
+                  const number_of_sales = this.point.custom?.number_of_sales || 0;
+                  const project_hours = this.point.custom?.project_hours || 0;
+                  const sales_hours = this.point.custom?.sales_hours || 0;
+                  const avg = this.point.custom?.avg || 0;
+                  
+                  let labelString = `<div style="text-align: center;">
+                      <div>${sales}</div>
+                      <div style="font-size: 12px; color: #777;">
+                        ${number_of_sales.toLocaleString()} sale${number_of_sales === 1 ? '' : 's'}
+                      </div>
+                    </div>`;
+                  
+                  if(avg > 0){
+                    labelString = `<div style="text-align: center;">
+                      <div>${sales}</div>
+                      <div style="font-size: 12px; color: #777;">
+                        ${number_of_sales.toLocaleString()} sale${number_of_sales === 1 ? '' : 's'}
+                      </div>
+                      <div style="font-size: 12px; color: #007bff;">
+                        $${avg.toFixed(2)}/hr
+                      </div>
+                    </div>`;
+                  }
+
+                  return labelString;
+                },
+                style: {
+                  color: '#333',
+                  fontSize: '14px'
+                }
+              }
+						}
+					},
+					series: [{
+						name: 'Total Sales',
+						data: data,
+						color: '#193856'
+					}],
+					exporting: {
+						enabled: true
+					},
+          credits: {
+            enabled: false
+          }
+				});
+      }
+      
+      populateSalesPersonSelect();
+      populateSellDateSelect();
+
+      $('#sales-person-filter').on('changed.bs.select', processSalesRecords);
+      $('#sell-date-filter').on('changed.bs.select', processSalesRecords);  
+      
+      processSalesRecords();  
+    });
+  </script>
 <% end %>
