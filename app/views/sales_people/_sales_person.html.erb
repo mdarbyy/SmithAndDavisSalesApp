@@ -1,9 +1,14 @@
 <tr>
   <td><%= link_to sales_person.first_name + " " + sales_person.last_name, edit_sales_person_path(sales_person), class: "nav-link" %></td>
 
+  <% if sales_person.is_active? %>
+    <td>Yes</td>
+  <% else %>
+    <td>No</td>
+  <% end %>
+
   <td>
     <div class="d-flex align-items-center">  
-      
       <% if sales_person.sales_records.present? %>
         <%= button_to 'View Sales Records', sales_person_path(sales_person),
         method: :get, data: { turbo: false }, class: 'btn btn-main mt-0' %>

@@ -3,7 +3,7 @@ class SalesPeopleController < ApplicationController
 
   # GET /sales_people or /sales_people.json
   def index
-    @sales_people = SalesPerson.all.includes(:sales_records).order(first_name: :asc, last_name: :asc)
+    @sales_people = SalesPerson.all.includes(:sales_records).order(Arel.sql("is_active DESC, first_name ASC, last_name ASC"))
     respond_to do |format|
       format.html
       format.js
@@ -71,6 +71,6 @@ class SalesPeopleController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def sales_person_params
-      params.require(:sales_person).permit(:first_name, :last_name)
+      params.require(:sales_person).permit(:first_name, :last_name, :is_active)
     end
 end

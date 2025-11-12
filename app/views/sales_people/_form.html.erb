@@ -13,6 +13,18 @@
     </div>
   </div>
 
+  <% if sales_person.id.present? %>
+    <div class="row g-3 mb-3 align-items-center">
+      <div class="col-12 d-flex justify-content-center">
+        <label class="col-form-label" style="margin-right: 10px;"><strong>Active Employee</strong></label>
+        <label class="custom-checkbox">
+          <%= form.check_box :is_active %>
+          <span class="checkmark"></span>
+        </label>
+      </div>
+    </div>
+  <% end %>
+
   <div class="row">
     <div class="col-12 d-flex justify-content-end">
       <%= form.submit 'Submit', class: 'btn btn-main', data: { turbo: false }, onclick:"show_spinner()" %>

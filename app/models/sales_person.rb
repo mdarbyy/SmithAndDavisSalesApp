@@ -15,8 +15,18 @@ class SalesPerson < ApplicationRecord
   end
   
   def unique_sales_person
-    if SalesPerson.where(first_name: first_name.capitalize, last_name: last_name.capitalize).exists?
-      errors.add(:base, "This Sales Person already exists")
+    
+    duplicate = if persisted?
+      # For updates, ignore the current record
+      SalesPerson.where(first_name: first_name.capitalize, last_name: last_name.capitalize).where.not(id: id).exists?
+    else
+      # For new records
+      SalesPerson.exists?(first_name: first_name.capitalize, last_name: last_name.capitalize)
     end
+
+    if duplicate
+      errors.add(:base, "This Sales Person already exists")
+    end  
+
   end
 end
