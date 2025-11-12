@@ -16,5 +16,6 @@ class StaticPagesController < ApplicationController
 
     sales_person_ids = @sales_records.pluck(:sales_person_id).uniq
     @sales_people = SalesPerson.where(id: sales_person_ids)
+    @sales_people_without_sales = SalesPerson.where.not(id: sales_person_ids)
   end
 end

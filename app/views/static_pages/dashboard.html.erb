@@ -172,8 +172,10 @@
       
       const salesRecords = <%= raw @sales_records.to_json %>;
 			const salesPeople = <%= raw @sales_people.to_json %>;
+      const salesPeopleWithoutSales = <%= raw @sales_people_without_sales.to_json %>;
 			console.log("Sales Records:", salesRecords);
 			console.log("Sales People:", salesPeople);
+      console.log("Sales People Without Sales: " + salesPeopleWithoutSales);
 			
 			const salesPersonIdToName = {};
 			salesPeople.forEach(sp => {
@@ -497,6 +499,158 @@
             enabled: false
           }
 				});
+
+        $('#export-total-sales-chart').off('click').on('click', async () => {
+          const startDate = "<%= @start_date.strftime('%m/%d/%Y') %>";
+          const endDate = "<%= @end_date.strftime('%m/%d/%Y') %>";
+
+          // --- Sort by total amount sold (descending)
+          const sortedBySales = Object.values(totalsByPerson)
+            .sort((a, b) => b.totals.amountSold - a.totals.amountSold);
+
+          // --- Sort by avgPerHour (descending)
+          const sortedByAvg = Object.values(totalsByPerson)
+            .sort((a, b) => b.avgPerHour - a.avgPerHour);
+
+          // --- Build workbook
+          const wb = new ExcelJS.Workbook();
+          const ws = wb.addWorksheet('Total Sales');
+
+          // --- Title (row 1)
+          ws.mergeCells('A1:H1');
+          const titleCell = ws.getCell('A1');
+          titleCell.value = startDate === endDate
+            ? `Total Sales for ${startDate}`
+            : `Total Sales from ${startDate} to ${endDate}`;
+          titleCell.font = { bold: true, size: 14 };
+          titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+          let fileName = startDate === endDate
+            ? `total_sales_for_${startDate.replace(/\//g, '-')}.xlsx`
+            : `total_sales_${startDate.replace(/\//g, '-')}_to_${endDate.replace(/\//g, '-')}.xlsx`;
+
+          // --- Row 2: Grand amount
+          ws.mergeCells('A2:H2');
+          const totalAmountCell = ws.getCell('A2');
+          totalAmountCell.value = `Total Amount Sold: $${grandTotals.amountSold.toLocaleString()}`;
+          totalAmountCell.font = { bold: true };
+          totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // --- Row 3: Grand items
+          ws.mergeCells('A3:H3');
+          const totalItemsCell = ws.getCell('A3');
+          totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
+          totalItemsCell.font = { bold: true };
+          totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // --- Row 4: Grand avg per hour
+          ws.mergeCells('A4:H4');
+          const avgCell = ws.getCell('A4');
+          avgCell.value = `Average Per Hour: $${grandTotals.avgPerHour.toFixed(2)}/hr`;
+          avgCell.font = { bold: true };
+          avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // --- Spacer (row 5)
+          ws.addRow([]);
+
+          // --- Header (row 6)
+          const headerRow = ws.addRow([
+            'Name',
+            'Amount Sold',
+            'Sales Floor Hours',
+            'Items Sold',
+            'Project Hours',
+            'Rank',
+            'Average',
+            'Name'
+          ]);
+          headerRow.font = { bold: true };
+          headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+          // color+bold the Rank header (column F)
+          headerRow.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
+
+          // --- Data rows A–F: sorted by sales (start at row 7)
+          let rank = 1;
+          sortedBySales.forEach(personData => {
+            const { name, totals } = personData;
+            const row = ws.addRow([
+              name,
+              totals.amountSold,
+              totals.salesFloorHours,
+              totals.itemsSold,
+              totals.projectHours,
+              rank,
+              null,
+              null
+            ]);
+
+            // Format B as currency
+            row.getCell(2).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
+
+            // style Rank cell (F)
+            row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
+            row.alignment = { horizontal: 'center', vertical: 'middle' };
+
+            rank++;
+          });
+
+          // --- Fill columns G (Average) and H (Sales Person by Avg)
+          // Data rows start at row 7
+          sortedByAvg.forEach((p, i) => {
+            const rowIndex = i + 7; // first data row is 7
+            const avgVal = p.avgPerHour || 0;
+            ws.getCell(rowIndex, 7).value = avgVal;            // G
+            ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
+            ws.getCell(rowIndex, 8).value = p.name;            // H
+
+            // style avg/name cells alignment
+            ws.getCell(rowIndex, 7).alignment = { horizontal: 'center', vertical: 'middle' };
+            ws.getCell(rowIndex, 8).alignment = { horizontal: 'center', vertical: 'middle' };
+          });
+
+          // After filling sortedBySales & sortedByAvg
+          salesPeopleWithoutSales.sort((a, b) => {
+            const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+            const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+            if (nameA < nameB) return -1;
+            if (nameA > nameB) return 1;
+            return 0;
+          });
+          
+          salesPeopleWithoutSales.forEach(person => {
+            const row = ws.addRow([
+              `${person.first_name} ${person.last_name}`,
+              '-',
+              '-',
+              '-',
+              '-',
+              rank,
+              '-',
+              `${person.first_name} ${person.last_name}`
+            ]);
+
+            // Center align all cells
+            [1,2,3,4,5,6,7,8].forEach(c => {
+              row.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };
+            });
+
+            // Style Rank cell (F)
+            row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
+
+            rank++; // increment rank for next row
+          });
+
+
+
+          // --- Column widths
+          const widths = [25, 25, 25, 25, 25, 10, 25, 25];
+          widths.forEach((w, i) => (ws.getColumn(i + 1).width = w));
+
+          // --- Export
+          const buf = await wb.xlsx.writeBuffer();
+          saveAs(new Blob([buf], { type: 'application/octet-stream' }), fileName);
+        });
+
       }
       
       populateSalesPersonSelect();
