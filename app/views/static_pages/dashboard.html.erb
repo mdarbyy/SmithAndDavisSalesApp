@@ -529,31 +529,38 @@
             ? `total_sales_for_${startDate.replace(/\//g, '-')}.xlsx`
             : `total_sales_${startDate.replace(/\//g, '-')}_to_${endDate.replace(/\//g, '-')}.xlsx`;
 
-          // --- Row 2: Grand amount
+          // --- Row 2: Total amount
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
           totalAmountCell.value = `Total Amount Sold: $${grandTotals.amountSold.toLocaleString()}`;
           totalAmountCell.font = { bold: true };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Row 3: Grand items
+          // --- Row 3: Total sales floor hours
           ws.mergeCells('A3:H3');
-          const totalItemsCell = ws.getCell('A3');
-          totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
-          totalItemsCell.font = { bold: true };
-          totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-          // --- Row 4: Grand avg per hour
+          const totalSalesFloorHoursCell = ws.getCell('A3');
+          totalSalesFloorHoursCell.value = `Total Sales Floor Hours: ${grandTotals.salesFloorHours}`;
+          totalSalesFloorHoursCell.font = { bold: true };
+          totalSalesFloorHoursCell.alignment = { horizontal: 'center', vertical: 'middle' };
+          
+          // --- Row 4: Total avg per hour
           ws.mergeCells('A4:H4');
           const avgCell = ws.getCell('A4');
           avgCell.value = `Average Per Hour: $${grandTotals.avgPerHour.toFixed(2)}/hr`;
           avgCell.font = { bold: true };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Spacer (row 5)
+          // --- Row 5: Total items
+          ws.mergeCells('A5:H5');
+          const totalItemsCell = ws.getCell('A5');
+          totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
+          totalItemsCell.font = { bold: true };
+          totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+          // --- Spacer (row 6)
           ws.addRow([]);
 
-          // --- Header (row 6)
+          // --- Header (row 7)
           const headerRow = ws.addRow([
             'Name',
             'Items Sold',
@@ -569,7 +576,7 @@
           // color+bold the Rank header (column F)
           headerRow.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
 
-          // --- Data rows A–F: sorted by sales (start at row 7)
+          // --- Data rows A–F: sorted by sales (start at row 8)
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
@@ -595,9 +602,9 @@
           });
 
           // --- Fill columns G (Average) and H (Sales Person by Avg)
-          // Data rows start at row 7
+          // Data rows start at row 8
           sortedByAvg.forEach((p, i) => {
-            const rowIndex = i + 7; // first data row is 7
+            const rowIndex = i + 8; // first data row is 8
             const avgVal = p.avgPerHour || 0;
             ws.getCell(rowIndex, 7).value = avgVal;            // G
             ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
@@ -639,8 +646,6 @@
 
             rank++; // increment rank for next row
           });
-
-
 
           // --- Column widths
           const widths = [25, 25, 25, 25, 25, 10, 25, 25];
