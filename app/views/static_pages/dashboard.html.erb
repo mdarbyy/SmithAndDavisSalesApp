@@ -556,9 +556,9 @@
           // --- Header (row 6)
           const headerRow = ws.addRow([
             'Name',
+            'Items Sold',
             'Amount Sold',
             'Sales Floor Hours',
-            'Items Sold',
             'Project Hours',
             'Rank',
             'Average',
@@ -575,9 +575,9 @@
             const { name, totals } = personData;
             const row = ws.addRow([
               name,
+              totals.itemsSold,
               totals.amountSold,
               totals.salesFloorHours,
-              totals.itemsSold,
               totals.projectHours,
               rank,
               null,
@@ -585,7 +585,7 @@
             ]);
 
             // Format B as currency
-            row.getCell(2).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
+            row.getCell(3).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
 
             // style Rank cell (F)
             row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
@@ -620,12 +620,12 @@
           salesPeopleWithoutSales.forEach(person => {
             const row = ws.addRow([
               `${person.first_name} ${person.last_name}`,
-              '-',
-              '-',
-              '-',
-              '-',
+              '---',
+              '---',
+              '---',
+              '---',
               rank,
-              '-',
+              '---',
               `${person.first_name} ${person.last_name}`
             ]);
 
