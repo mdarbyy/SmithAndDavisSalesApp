@@ -370,7 +370,7 @@
               <td><strong>${personData.totals.itemsSold}</strong></td>
               <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
               <td><strong>${personData.totals.salesFloorHours}</strong></td>
-              <td><strong>$${personData.avgPerHour}</strong></td>
+              <td><strong>$${personData.avgPerHour.toFixed(2)}</strong></td>
               <td><strong>${personData.totals.projectHours}</strong></td>
             `;
             tbody.appendChild(totalRow);
