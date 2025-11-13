@@ -533,28 +533,28 @@
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
           totalAmountCell.value = `Total Amount Sold: $${grandTotals.amountSold.toLocaleString()}`;
-          totalAmountCell.font = { bold: true };
+          totalAmountCell.font = { size: 12 };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
           // --- Row 3: Total sales floor hours
           ws.mergeCells('A3:H3');
           const totalSalesFloorHoursCell = ws.getCell('A3');
           totalSalesFloorHoursCell.value = `Total Sales Floor Hours: ${grandTotals.salesFloorHours}`;
-          totalSalesFloorHoursCell.font = { bold: true };
+          totalSalesFloorHoursCell.font = { size: 12 };
           totalSalesFloorHoursCell.alignment = { horizontal: 'center', vertical: 'middle' };
           
           // --- Row 4: Total avg per hour
           ws.mergeCells('A4:H4');
           const avgCell = ws.getCell('A4');
           avgCell.value = `Average Per Hour: $${grandTotals.avgPerHour.toFixed(2)}/hr`;
-          avgCell.font = { bold: true };
+          avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
           // --- Row 5: Total items
           ws.mergeCells('A5:H5');
           const totalItemsCell = ws.getCell('A5');
           totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
-          totalItemsCell.font = { bold: true };
+          totalItemsCell.font = { size: 12 };
           totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
           // --- Spacer (row 6)
@@ -604,11 +604,11 @@
           // --- Fill columns G (Average) and H (Sales Person by Avg)
           // Data rows start at row 8
           sortedByAvg.forEach((p, i) => {
-            const rowIndex = i + 8; // first data row is 8
+            const rowIndex = i + 8;
             const avgVal = p.avgPerHour || 0;
-            ws.getCell(rowIndex, 7).value = avgVal;            // G
-            ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00;[Red]-"$"#,##0.00';
-            ws.getCell(rowIndex, 8).value = p.name;            // H
+            ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00"/hr"';
+            ws.getCell(rowIndex, 7).value = avgVal;
+            ws.getCell(rowIndex, 8).value = p.name;            
 
             // style avg/name cells alignment
             ws.getCell(rowIndex, 7).alignment = { horizontal: 'center', vertical: 'middle' };
