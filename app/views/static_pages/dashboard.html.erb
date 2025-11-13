@@ -527,7 +527,8 @@
           // --- Row 2: Total amount
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
-          totalAmountCell.value = `Total Amount Sold: $${grandTotals.amountSold.toLocaleString()}`;
+          totalAmountCell.value = Number(grandTotals.amountSold);
+          totalAmountCell.numFmt = '"Total Amount Sold: $"#,##0.00';
           totalAmountCell.font = { size: 12 };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -538,10 +539,11 @@
           totalSalesFloorHoursCell.font = { size: 12 };
           totalSalesFloorHoursCell.alignment = { horizontal: 'center', vertical: 'middle' };
           
-          // --- Row 4: Total avg per hour
+          // --- Row 4: Average Per Hour
           ws.mergeCells('A4:H4');
           const avgCell = ws.getCell('A4');
-          avgCell.value = `Average Per Hour: $${grandTotals.avgPerHour.toFixed(2)}`;
+          avgCell.value = Number(grandTotals.avgPerHour);
+          avgCell.numFmt = '"Average Per Hour: $"#,##0.00""';
           avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
