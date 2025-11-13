@@ -515,8 +515,8 @@
           ws.mergeCells('A1:H1');
           const titleCell = ws.getCell('A1');
           titleCell.value = startDate === endDate
-            ? `Total Sales for ${startDate}`
-            : `Total Sales from ${startDate} to ${endDate}`;
+            ? `Sales for ${startDate}`
+            : `Sales from ${startDate} to ${endDate}`;
           titleCell.font = { bold: true, size: 14 };
           titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
