@@ -1,10 +1,10 @@
 <div class="d-flex flex-column m-1">
 
   <div class="row">
-    <div class="col-4 d-flex justify-content-start">
+    <div class="col-3 d-flex justify-content-start">
       <%= button_to 'Cancel', sales_people_path, method: :get, data: { turbo: false }, class: 'btn btn-main btn-left' %>
     </div>
-    <div class="col-4 d-flex justify-content-center">
+    <div class="col-5 d-flex justify-content-center">
       <h1><%= @sales_person.first_name + " " + @sales_person.last_name %></h1>
     </div>
     <div class="col-4 d-flex justify-content-end">
