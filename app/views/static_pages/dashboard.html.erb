@@ -1,5 +1,70 @@
+<style>
+  @media(max-height: 580px) {
+    .dashboard-content,
+    .right-col,
+    .left-col,
+    .main-content-row {
+      height: 100%;
+      min-height: 0;
+    }
+    .dashboard-content {
+      overflow: hidden;
+    }
+    
+    #filterCard {
+      padding-top: 0.5rem;         
+      padding-bottom: 0.25rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    #selectDateRange {
+      height: calc(100vh - 70px);
+    }
+  }
+
+  @media (min-height: 581px) and (max-height: 650px) {
+    
+    .dashboard-content,
+    .right-col,
+    .left-col,
+    .main-content-row {
+      height: 100%;
+      min-height: 0;
+    }
+    
+    #filterCard {
+      padding-top: 1rem;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    #filterHeader {
+      margin-top: 0.75rem;
+    }
+
+    #sellDateFilter {
+      margin-bottom: 0.75rem;
+    }
+
+    #selectDateRange {
+      height: calc(100vh - 70px);
+    }
+  }
+
+  @media(min-height: 651px){
+    #filterCard {
+      padding: 1.25rem;
+    }
+
+    #selectDateRange {
+      height: calc(100vh - 70px);
+    }
+  }
+</style>
+
 <% if @start_date.blank? || @end_date.blank? %>
-  <div class="d-flex justify-content-center align-items-center" style="height: calc(100vh - 180px);">
+  <div class="d-flex justify-content-center align-items-center" id="selectDateRange">
     <div class="card p-4" style="max-width: 400px; width: 100%;">
       <h4 class="mb-3 text-center">Select a Date Range</h4>
       <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
@@ -28,59 +93,7 @@
     </div>
   </div>
 <% else %>
-  <style>
-    @media(max-height: 580px) {
-      .dashboard-content,
-      .right-col,
-      .left-col,
-      .main-content-row {
-        height: 100%;
-        min-height: 0;
-      }
-      .dashboard-content {
-        overflow: hidden;
-      }
-      
-      #filterCard {
-        padding-top: 0.5rem;         
-        padding-bottom: 0.25rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-    }
-
-    @media (min-height: 581px) and (max-height: 650px) {
-      
-      .dashboard-content,
-      .right-col,
-      .left-col,
-      .main-content-row {
-        height: 100%;
-        min-height: 0;
-      }
-      
-      #filterCard {
-        padding-top: 1rem;
-        padding-left: 1rem;
-        padding-right: 1rem;
-      }
-
-      #filterHeader {
-        margin-top: 0.75rem;
-      }
-
-      #sellDateFilter {
-        margin-bottom: 0.75rem;
-      }
-    }
-
-    @media(min-height: 651px){
-      #filterCard {
-        padding: 1.25rem;
-      }
-    }
-  </style>
-
+  
   <div class="modal fade" id="totalSalesModal" tabindex="-1" aria-labelledby="totalSalesModalLabel" aria-hidden="true">
 		<div class="modal-dialog custom-modal">
 			<div class="modal-content">
