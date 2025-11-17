@@ -84,13 +84,15 @@
     });
 
     function checkAllFieldsFilled() {
+      const amountSoldValid = parseFloat(amountSold.value) >= 1;
       const salesFloorValid = parseFloat(salesFloorHours.value) > 0;
+      const projectHoursValid = parseFloat(projectHours.value) >= 0;
       const itemsSoldValid  = parseInt(itemsSold.value) >= 1;
       const allFilled =
         salesPerson.value &&
         sellDate.value &&
-        amountSold.value &&
-        projectHours.value &&
+        amountSoldValid &&
+        projectHoursValid &&
         salesFloorValid &&
         itemsSoldValid;
 
