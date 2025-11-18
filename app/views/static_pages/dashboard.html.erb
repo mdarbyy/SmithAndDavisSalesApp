@@ -483,7 +483,7 @@
                   $${grandTotals.amountSold.toLocaleString()}
                 </div>
                 <div style="font-size: 14px; font-weight: bold; color: #777;">
-                  ${grandTotals.itemsSold.toLocaleString()} sale${grandTotals.itemsSold === 1 ? '' : 's'}
+                  ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
                 </div>
               </div>
             `
@@ -525,7 +525,7 @@
                   let labelString = `<div style="text-align: center;">
                       <div>${sales}</div>
                       <div style="font-size: 12px; color: #777;">
-                        ${items_sold.toLocaleString()} sale${items_sold === 1 ? '' : 's'}
+                        ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
                       </div>
                     </div>`;
                   
@@ -533,7 +533,7 @@
                     labelString = `<div style="text-align: center;">
                       <div>${sales}</div>
                       <div style="font-size: 12px; color: #777;">
-                        ${items_sold.toLocaleString()} sale${items_sold === 1 ? '' : 's'}
+                        ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
                       </div>
                       <div style="font-size: 12px; color: #007bff;">
                         $${avg.toFixed(2)}/hr
