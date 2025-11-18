@@ -642,10 +642,14 @@
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
+            
+            const itemsSold = totals.itemsSold > 0 ? totals.itemsSold : '---';
+            const amountSold = totals.amountSold > 0 ? totals.amountSold : '---';
+            
             const row = ws.addRow([
               name,
-              totals.itemsSold,
-              totals.amountSold,
+              itemsSold,
+              amountSold,
               totals.salesFloorHours,
               totals.projectHours,
               rank,
@@ -667,7 +671,7 @@
           // Data rows start at row 8
           sortedByAvg.forEach((p, i) => {
             const rowIndex = i + 8;
-            const avgVal = p.avgPerHour || 0;
+            const avgVal = p.avgPerHour || '---';
             ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00""';
             ws.getCell(rowIndex, 7).value = avgVal;
             ws.getCell(rowIndex, 8).value = p.name;            
