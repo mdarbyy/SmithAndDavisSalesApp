@@ -44,11 +44,11 @@
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-6">
       <label class="col-form-label"><strong>Project Hours</strong></label>
-      <%= form.number_field :project_hours, step: 0.1, placeholder: 0, class: "form-control", id:"project_hours" %>
+      <%= form.number_field :project_hours, placeholder: 0, step: :any, class: "form-control", id:"project_hours" %>
     </div>
     <div class="col-6">
       <label class="col-form-label"><strong>Sales Floor Hours</strong></label>
-      <%= form.number_field :sales_floor_hours, step: 0.1, class: "form-control", id:"sales_floor_hours" %>
+      <%= form.number_field :sales_floor_hours, step: :any, class: "form-control", id:"sales_floor_hours" %>
     </div>
   </div>
 
