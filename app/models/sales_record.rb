@@ -1,13 +1,19 @@
 class SalesRecord < ApplicationRecord
   belongs_to :sales_person
   validates :sell_date, presence: true
-  validates :amount_sold, presence: true
-  validates :sales_floor_hours, presence: true
-  validates :project_hours, presence: true
   before_create :ensure_unique_sales_record
+  before_create :ensure_fields_filled
   before_update :ensure_unique_sales_record
+  before_update :ensure_fields_filled
 
   private
+
+  def ensure_fields_filled
+    self.amount_sold       ||= 0
+    self.items_sold        ||= 0
+    self.sales_floor_hours ||= 0
+    self.project_hours     ||= 0
+  end
 
   def ensure_unique_sales_record
     

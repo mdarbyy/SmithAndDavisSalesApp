@@ -84,11 +84,17 @@
     });
 
     function checkAllFieldsFilled() {
-      const amountSoldValid = parseFloat(amountSold.value) >= 0;
-      const salesFloorHoursValid = parseFloat(salesFloorHours.value) >= 0;
-      const projectHoursValid = parseFloat(projectHours.value) >= 0;
-      const itemsSoldValid  = parseInt(itemsSold.value) >= 0;
-      const allFilled =
+      const amount = parseFloat(amountSold.value) || 0;
+      const hours = parseFloat(salesFloorHours.value) || 0;
+      const proj  = parseFloat(projectHours.value) || 0;
+      const items = parseInt(itemsSold.value) || 0;
+
+      const amountSoldValid = amount >= 0;
+      const salesFloorHoursValid = hours >= 0;
+      const projectHoursValid = proj >= 0;
+      const itemsSoldValid = items >= 0;
+
+      const requiredFieldsFilled =
         salesPerson.value &&
         sellDate.value &&
         amountSoldValid &&
@@ -96,7 +102,15 @@
         salesFloorHoursValid &&
         itemsSoldValid;
 
-      submitRow.style.display = allFilled ? "flex" : "none";
+      // 🚫 Invalid conditions:
+      const inconsistentAmounts =
+        (amount > 0 && items === 0) ||   // sold money but 0 items
+        (amount === 0 && items > 0);     // sold items but 0 dollars
+
+      // Final decision
+      const showSubmit = requiredFieldsFilled && !inconsistentAmounts;
+
+      submitRow.style.display = showSubmit ? "flex" : "none";
     }
 
     [amountSold, itemsSold, projectHours, salesFloorHours].forEach(el => {
