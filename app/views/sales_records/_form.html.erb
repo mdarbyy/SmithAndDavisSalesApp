@@ -84,16 +84,16 @@
     });
 
     function checkAllFieldsFilled() {
-      const amountSoldValid = parseFloat(amountSold.value) >= 1;
-      const salesFloorValid = parseFloat(salesFloorHours.value) > 0;
+      const amountSoldValid = parseFloat(amountSold.value) >= 0;
+      const salesFloorHoursValid = parseFloat(salesFloorHours.value) >= 0;
       const projectHoursValid = parseFloat(projectHours.value) >= 0;
-      const itemsSoldValid  = parseInt(itemsSold.value) >= 1;
+      const itemsSoldValid  = parseInt(itemsSold.value) >= 0;
       const allFilled =
         salesPerson.value &&
         sellDate.value &&
         amountSoldValid &&
         projectHoursValid &&
-        salesFloorValid &&
+        salesFloorHoursValid &&
         itemsSoldValid;
 
       submitRow.style.display = allFilled ? "flex" : "none";
