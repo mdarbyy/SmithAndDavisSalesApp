@@ -85,13 +85,13 @@
 
     function checkAllFieldsFilled() {
       const amount = parseFloat(amountSold.value) || 0;
-      const hours = parseFloat(salesFloorHours.value) || 0;
-      const proj  = parseFloat(projectHours.value) || 0;
+      const sales_floor_hours = parseFloat(salesFloorHours.value) || 0;
+      const project_hours  = parseFloat(projectHours.value) || 0;
       const items = parseInt(itemsSold.value) || 0;
 
       const amountSoldValid = amount >= 0;
-      const salesFloorHoursValid = hours >= 0;
-      const projectHoursValid = proj >= 0;
+      const salesFloorHoursValid = sales_floor_hours >= 0;
+      const projectHoursValid = project_hours >= 0;
       const itemsSoldValid = items >= 0;
 
       const requiredFieldsFilled =
@@ -104,8 +104,10 @@
 
       // 🚫 Invalid conditions:
       const inconsistentAmounts =
-        (amount > 0 && items === 0) ||   // sold money but 0 items
-        (amount === 0 && items > 0);     // sold items but 0 dollars
+        (amount > 0 && items === 0) ||   
+        (amount === 0 && items > 0) ||
+        (amount === 0 && items === 0 && sales_floor_hours === 0 && project_hours === 0) ||
+        (amount > 0 && items > 0 && sales_floor_hours === 0)   
 
       // Final decision
       const showSubmit = requiredFieldsFilled && !inconsistentAmounts;
