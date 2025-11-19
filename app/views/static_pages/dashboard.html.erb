@@ -496,12 +496,12 @@
                 <div style="font-size: 18px; font-weight: bold; color: #333;">
                   $${grandTotals.amountSold.toLocaleString()}
                 </div>
-                <div style="font-size: 14px; font-weight: bold; color: #777;">
-                  ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
-                </div>
                 <div style="font-size: 14px; font-weight: bold; color: #007bff;">
                   $${formatMoney(grandTotals.avgPerHour)}/hr
                 </div>
+              </div>
+              <div style="font-size: 14px; font-weight: bold; color: #777;">
+                ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
               </div>
             `
 					},
@@ -549,11 +549,11 @@
                   if(avg > 0){
                     labelString = `<div style="text-align: center;">
                       <div>${sales}</div>
-                      <div style="font-size: 12px; color: #777;">
-                        ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
-                      </div>
                       <div style="font-size: 12px; color: #007bff;">
                         $${formatMoney(avg)}/hr
+                      </div>
+                      <div style="font-size: 12px; color: #777;">
+                        ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
                       </div>
                     </div>`;
                   }
@@ -609,36 +609,28 @@
           // --- Row 2: Total amount
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
-          totalAmountCell.value = Number(grandTotals.amountSold);
-          totalAmountCell.numFmt = '"Total Amount Sold: $"#,##0';
+          totalAmountCell.value = `Total Amount Sold: $${formatMoney(grandTotals.amountSold)}`
           totalAmountCell.font = { size: 12 };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Row 3: Total sales floor hours
+          // --- Row 3: Average Per Hour
           ws.mergeCells('A3:H3');
-          const totalSalesFloorHoursCell = ws.getCell('A3');
-          totalSalesFloorHoursCell.value = `Total Sales Floor Hours: ${grandTotals.salesFloorHours}`;
-          totalSalesFloorHoursCell.font = { size: 12 };
-          totalSalesFloorHoursCell.alignment = { horizontal: 'center', vertical: 'middle' };
-          
-          // --- Row 4: Average Per Hour
-          ws.mergeCells('A4:H4');
-          const avgCell = ws.getCell('A4');
+          const avgCell = ws.getCell('A3');
           avgCell.value = `Average Per Hour: $${formatMoney(grandTotals.avgPerHour)}`;
           avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Row 5: Total items
-          ws.mergeCells('A5:H5');
-          const totalItemsCell = ws.getCell('A5');
+          // --- Row 4: Total items
+          ws.mergeCells('A4:H4');
+          const totalItemsCell = ws.getCell('A4');
           totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
           totalItemsCell.font = { size: 12 };
           totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Spacer (row 6)
+          // --- Spacer (row 5)
           ws.addRow([]);
 
-          // --- Header (row 7)
+          // --- Header (row 6)
           const headerRow = ws.addRow([
             'Name',
             'Items Sold',
@@ -658,7 +650,7 @@
             const { name, totals } = personData;
             
             const itemsSold = totals.itemsSold > 0 ? totals.itemsSold : '---';
-            const amountSold = totals.amountSold > 0 ? totals.amountSold : '---';
+            const amountSold = totals.amountSold > 0 ? '$' + formatMoney(totals.amountSold) : '---';
             
             const row = ws.addRow([
               name,
@@ -671,9 +663,7 @@
               null
             ]);
 
-            // Format B as currency
-            row.getCell(3).numFmt = '"$"#,##0;[Red]-"$"#,##0';
-
+  
             // style Rank cell (F)
             row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.alignment = { horizontal: 'center', vertical: 'middle' };
@@ -681,21 +671,21 @@
             rank++;
           });
 
-          // --- Fill columns G (Average) and H (Sales Person by Avg)
-          // Data rows start at row 8
+          // Data rows start at row 7
           sortedByAvg.forEach((p, i) => {
-            const rowIndex = i + 8;
-            const avgVal = p.avgPerHour || '---';
-            
-            ws.getCell(rowIndex, 7).value = `$${formatMoney(avgVal)}`;
+            const rowIndex = i + 7;
+            const avgVal = p.avgPerHour;
+            if(avgVal > 0){
+              ws.getCell(rowIndex, 7).value = `$${formatMoney(avgVal)}`;
+            } else {
+              ws.getCell(rowIndex, 7).value = `---`;
+            }
             ws.getCell(rowIndex, 8).value = p.name;            
 
-            // style avg/name cells alignment
             ws.getCell(rowIndex, 7).alignment = { horizontal: 'center', vertical: 'middle' };
             ws.getCell(rowIndex, 8).alignment = { horizontal: 'center', vertical: 'middle' };
           });
 
-          // After filling sortedBySales & sortedByAvg
           salesPeopleWithoutSales.sort((a, b) => {
             const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
             const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
@@ -727,15 +717,12 @@
             rank++; // increment rank for next row
           });
 
-          // --- Column widths
           const widths = [25, 25, 25, 25, 25, 10, 25, 25];
           widths.forEach((w, i) => (ws.getColumn(i + 1).width = w));
 
-          // --- Export
           const buf = await wb.xlsx.writeBuffer();
           saveAs(new Blob([buf], { type: 'application/octet-stream' }), fileName);
         });
-
       }
       
       populateSalesPersonSelect();
