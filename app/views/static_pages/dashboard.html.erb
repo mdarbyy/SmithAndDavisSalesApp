@@ -253,7 +253,17 @@
         row.style.paddingBottom = "10px";
         return row;
       }
-      
+
+      function formatMoney(value) {
+        if (value % 1 === 0) {
+          return value.toLocaleString();
+        }
+        return value.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
       function getFilteredSalesRecords() {
         const selectedSalesPersonIds = $('#sales-person-filter').val() || [];
         const selectedSellDates = $('#sell-date-filter').val() || [];
@@ -405,7 +415,11 @@
             const itemsSold = record.itemsSold;
             const dailyProjectHours = record.projectHours;
             const dailySalesHours = record.salesFloorHours;
-            const dailyAvg = dailySalesHours > 0 && dailyTotal > 0 ? (dailyTotal / dailySalesHours).toFixed(2) : 0;
+            const dailyAvgRaw = dailySalesHours > 0 && dailyTotal > 0 
+            ? (dailyTotal / dailySalesHours) 
+            : 0;
+
+            const dailyAvg = formatMoney(dailyAvgRaw);
 
             const row = document.createElement('tr');
             row.innerHTML = `
@@ -435,7 +449,7 @@
               <td><strong>${personData.totals.itemsSold}</strong></td>
               <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
               <td><strong>${personData.totals.salesFloorHours}</strong></td>
-              <td><strong>$${personData.avgPerHour.toFixed(2)}</strong></td>
+              <td><strong>$${formatMoney(personData.avgPerHour)}</strong></td>
               <td><strong>${personData.totals.projectHours}</strong></td>
             `;
             tbody.appendChild(totalRow);
@@ -484,6 +498,9 @@
                 </div>
                 <div style="font-size: 14px; font-weight: bold; color: #777;">
                   ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
+                </div>
+                <div style="font-size: 14px; font-weight: bold; color: #007bff;">
+                  $${formatMoney(grandTotals.avgPerHour)}/hr
                 </div>
               </div>
             `
@@ -536,7 +553,7 @@
                         ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
                       </div>
                       <div style="font-size: 12px; color: #007bff;">
-                        $${avg.toFixed(2)}/hr
+                        $${formatMoney(avg)}/hr
                       </div>
                     </div>`;
                   }
@@ -607,8 +624,7 @@
           // --- Row 4: Average Per Hour
           ws.mergeCells('A4:H4');
           const avgCell = ws.getCell('A4');
-          avgCell.value = Number(grandTotals.avgPerHour);
-          avgCell.numFmt = '"Average Per Hour: $"#,##0.00""';
+          avgCell.value = `Average Per Hour: $${formatMoney(grandTotals.avgPerHour)}`;
           avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -635,10 +651,8 @@
           ]);
           headerRow.font = { bold: true };
           headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
-          // color+bold the Rank header (column F)
           headerRow.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
 
-          // --- Data rows A–F: sorted by sales (start at row 8)
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
@@ -672,8 +686,8 @@
           sortedByAvg.forEach((p, i) => {
             const rowIndex = i + 8;
             const avgVal = p.avgPerHour || '---';
-            ws.getCell(rowIndex, 7).numFmt = '"$"#,##0.00""';
-            ws.getCell(rowIndex, 7).value = avgVal;
+            
+            ws.getCell(rowIndex, 7).value = `$${formatMoney(avgVal)}`;
             ws.getCell(rowIndex, 8).value = p.name;            
 
             // style avg/name cells alignment

@@ -102,14 +102,12 @@
         salesFloorHoursValid &&
         itemsSoldValid;
 
-      // 🚫 Invalid conditions:
       const inconsistentAmounts =
         (amount > 0 && items === 0) ||   
         (amount === 0 && items > 0) ||
         (amount === 0 && items === 0 && sales_floor_hours === 0 && project_hours === 0) ||
         (amount > 0 && items > 0 && sales_floor_hours === 0)   
 
-      // Final decision
       const showSubmit = requiredFieldsFilled && !inconsistentAmounts;
 
       submitRow.style.display = showSubmit ? "flex" : "none";
@@ -120,13 +118,11 @@
       el.addEventListener("input", checkAllFieldsFilled);
     });
 
-    // Safety: ensure hidden fields updated before submit
     form.addEventListener("submit", function() {
       hiddenSalesPerson.value = salesPerson.value;
       hiddenSellDate.value = sellDate.value;
     });
 
-    // Run once at load
     hiddenSalesPerson.value = salesPerson.value;
     hiddenSellDate.value = sellDate.value;
     checkAllFieldsFilled();
