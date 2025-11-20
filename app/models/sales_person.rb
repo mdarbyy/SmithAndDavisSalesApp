@@ -22,7 +22,6 @@ class SalesPerson < ApplicationRecord
   end
   
   def unique_sales_person
-    
     duplicate = if persisted?
       # For updates, ignore the current record
       SalesPerson.where(first_name: first_name.capitalize, last_name: last_name.capitalize).where.not(id: id).exists?

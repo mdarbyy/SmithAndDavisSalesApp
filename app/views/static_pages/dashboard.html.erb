@@ -127,7 +127,7 @@
     <div class="row main-content-row">
       <div class="col-12 col-md-3 left-col">
         <div class="card mb-3 p-4">
-          <h5 class="text-center">Change the Date Range</h5>
+          <h5 class="text-center mb-3">Change the Date Range</h5>
           <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
             <div class="mb-3">
               <%= form.label :start_date, "Start Date", class: "form-label" %>
@@ -139,7 +139,7 @@
               </div>
             </div>
 
-            <div class="mb-2">
+            <div class="mb-3">
               <%= form.label :end_date, "End Date", class: "form-label" %>
               <div class="input-group">
                 <%= form.text_field :end_date, class: "form-control datepicker", required: true, value: (params[:end_date].presence || Date.current.strftime("%m/%d/%Y")) %>
@@ -496,9 +496,11 @@
                 <div style="font-size: 18px; font-weight: bold; color: #333;">
                   $${grandTotals.amountSold.toLocaleString()}
                 </div>
-                <div style="font-size: 14px; font-weight: bold; color: #007bff;">
-                  $${formatMoney(grandTotals.avgPerHour)}/hr
-                </div>
+                ${grandTotals.avgPerHour > 0 ? `
+                  <div style="font-size: 14px; font-weight: bold; color: #007bff;">
+                    $${formatMoney(grandTotals.avgPerHour)}/hr
+                  </div>
+                ` : ''}
               </div>
               <div style="font-size: 14px; font-weight: bold; color: #777;">
                 ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
