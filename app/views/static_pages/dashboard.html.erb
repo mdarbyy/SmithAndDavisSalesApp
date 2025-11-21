@@ -19,6 +19,13 @@
     min-height: 0; /* KEY FIX — allows proper resizing on short screens */
   }
 
+  #selectDateRange {
+    min-height: calc(100dvh - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 </style>
 
 <% if @start_date.blank? || @end_date.blank? %>
