@@ -20,18 +20,17 @@
         <table class="table content" id="content-table">
           <thead>
             <tr>
-              <th class="stick" scope="col"><a>Sales Person</a></th>
               <th class="stick" scope="col"><a>Sell Date</a></th>
               <th class="stick" scope="col"><a>Amount Sold</a></th>
               <th class="stick" scope="col"><a>Items Sold</a></th>
               <th class="stick" scope="col"><a>Project Hours</a></th>
-              <th class="stick" scope="col" style="min-width: 140px;"><a>Sales Floor Hours</a></th>
+              <th class="stick" scope="col"><a>Sales Floor Hours</a></th>
               <th class="stick" scope="col"><a></a></th>
             </tr>
           </thead>
           <tbody id="content-table-body">
             <% @sales_records.each do |sales_record| %>
-              <%= render 'sales_records/sales_record', sales_record: sales_record %>
+              <%= render 'sales_people/sales_record', sales_record: sales_record %>
             <% end %>
           </tbody>
         </table>
@@ -39,12 +38,11 @@
         <table class="table content">
           <thead>
             <tr>
-              <th class="stick" scope="col"><a>Sales Person</a></th>
               <th class="stick" scope="col"><a>Sell Date</a></th>
               <th class="stick" scope="col"><a>Amount Sold</a></th>
               <th class="stick" scope="col"><a>Items Sold</a></th>
               <th class="stick" scope="col"><a>Project Hours</a></th>
-              <th class="stick" scope="col" style="min-width: 140px;"><a>Sales Floor Hours</a></th>
+              <th class="stick" scope="col"><a>Sales Floor Hours</a></th>
               <th class="stick" scope="col"><a></a></th>
             </tr>
           </thead>
