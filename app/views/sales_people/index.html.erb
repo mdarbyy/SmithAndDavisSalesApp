@@ -1,5 +1,4 @@
 <div class="d-flex flex-column m-1">
-
   <div class="row">
     <div class="col-3 d-flex justify-content-start">
       <%= button_to 'Add Sales Person', new_sales_person_path, method: :get, data: { turbo: false }, class: 'btn btn-main btn-left' %>
@@ -13,7 +12,6 @@
       </form>
     </div>
   </div>
-  
   <div class="card m-1 p-2" id="content-main">
     <div class="scrollable-table">
       <% if @sales_people.present? and @sales_people.count > 0 %>
@@ -44,17 +42,15 @@
         </table>
         <h1 class="text-center">NO DATA</h1>
       <% end %>
-
       <div id="loading-spinner" style="display: none; text-align: center;">
         <div class="spinner-border" style="color: #193856;" role="status">
           <span class="sr-only"></span>
         </div>
       </div>
     </div>
-
     <div style="text-align: center;" id="recordCount">
       <b>
-        Displaying <span id="currentCount"></span> 
+        Displaying <span id="currentCount"></span>
         <span id="recordLabel"
           data-singular="Sales Person"
           data-plural="Sales People">

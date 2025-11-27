@@ -199,8 +199,8 @@
         width: 100%;
         min-height: 0;
         height: calc(100vh - 155px);
-        overflow-x: auto !important;   /* horizontal scrollbar allowed */
-        overflow-y: hidden; /* vertical scroll not needed */
+        overflow-x: auto !important;
+        overflow-y: hidden;
       }
 
       .authenticated {
@@ -468,7 +468,7 @@
         }
 
         .main-content-row {
-          max-height: calc(100vh - 59px - 20px); /* full viewport minus navbar minus space at the bottom */
+          max-height: calc(100vh - 59px - 20px);
           display: flex;
         }
 
@@ -478,15 +478,13 @@
           flex-direction: column;
         }
 
-        /* Make the last card in each column expand to fill */
         .left-col .card:last-child,
         .right-col .card {
-          flex: 1 1 auto;        /* grow to fill available space */
+          flex: 1 1 auto;
           display: flex;
           flex-direction: column;
         }
 
-        /* Add some padding at the bottom so nothing touches the edge */
         .main-content-row {
           margin-bottom: 2rem !important;
         }
@@ -503,8 +501,8 @@
           width: 100%;
           min-height: 0;
           height: calc(100vh - 145px);
-          overflow-x: auto !important;   /* horizontal scrollbar allowed */
-          overflow-y: hidden; /* vertical scroll not needed */
+          overflow-x: auto !important;
+          overflow-y: hidden;
         }
       }
     </style>
@@ -683,7 +681,7 @@
   }
 
   function updateRecordLabel(count) {
-    $('#currentCount').text(count);
+    $('#currentCount').text(count.toLocaleString());
     const label = $('#recordLabel');
     const singular = label.data('singular');
     const plural = label.data('plural');

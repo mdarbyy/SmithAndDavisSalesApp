@@ -1,5 +1,4 @@
 <div class="d-flex flex-column m-1">
-
   <div class="row">
     <div class="col-3 d-flex justify-content-start">
       <%= button_to 'Add Sales Record', new_sales_record_path, method: :get, data: { turbo: false }, class: 'btn btn-main btn-left' %>
@@ -13,7 +12,6 @@
       </form>
     </div>
   </div>
-  
   <div class="card m-1 p-2" id="content-main">
     <div class="scrollable-table">
       <% if @sales_records.present? and @sales_records.count > 0 %>
@@ -52,25 +50,22 @@
         </table>
         <h1 class="text-center">NO DATA</h1>
       <% end %>
-
       <div id="loading-spinner" style="display: none; text-align: center;">
         <div class="spinner-border" style="color: #193856;" role="status">
           <span class="sr-only"></span>
         </div>
       </div>
     </div>
-
     <div style="text-align: center;" id="recordCount">
-      <b>Displaying <span id="currentCount">0</span> of <span id="totalCount"><%= @total_records %></span> Sales Records</b>
+      <b>Displaying <span id="currentCount">0</span> of <span id="totalCount"><%= number_with_delimiter(@total_records) %></span> Sales Records</b>
     </div>
   </div>
 </div>
-
 <script>
   var isLoading = false;
   $(".scrollable-table").scroll(function() {
-    var totalRecords = parseInt($('#totalCount').text());
-    var currentCount = parseInt($('#currentCount').text());
+    var totalRecords  = Number($('#totalCount').text().replace(/,/g, ''));
+    var currentCount  = Number($('#currentCount').text().replace(/,/g, ''));
 
     if (currentCount < totalRecords) {
       if ($(".scrollable-table").scrollTop() >= $("#content-table").height() - $(".scrollable-table").height() && !isLoading) {
