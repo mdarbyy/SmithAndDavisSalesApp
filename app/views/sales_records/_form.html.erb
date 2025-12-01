@@ -10,13 +10,10 @@
               sales_record.sales_person_id
             ) %>
       </select>
-
     </div>
   </div>
-
   <%= form.hidden_field :sales_person_id, id:"hidden_sales_person" %>
   <%= form.hidden_field :sell_date, id:"hidden_sell_date" %>
-  
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-12">
       <label class="col-form-label"><strong>Sell Date</strong></label>
@@ -24,12 +21,11 @@
         <input type="text" id="sell_date" class="form-control datepicker"
        value="<%= (@sales_record.sell_date || Date.today).strftime('%m/%d/%Y') %>" />
         <span class="input-group-text datepicker-icon">
-          <i class="bi bi-calendar-date"></i>
+          <i class="bi bi-calendar3"></i>
         </span>
       </div>
     </div>
   </div>
-
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-6">
       <label class="col-form-label"><strong>Amount Sold</strong></label>
@@ -40,7 +36,6 @@
       <%= form.number_field :items_sold, step: 1, class: "form-control", id:"items_sold" %>
     </div>
   </div>
-
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-6">
       <label class="col-form-label"><strong>Project Hours</strong></label>
@@ -51,14 +46,12 @@
       <%= form.number_field :sales_floor_hours, step: :any, class: "form-control", id:"sales_floor_hours" %>
     </div>
   </div>
-
   <div class="row" id="submit_btn_row" style="display: none;">
     <div class="col-12 d-flex justify-content-end">
       <%= submit_tag 'Submit', class: 'btn btn-main', id: 'submit_button', onclick:"show_spinner()", data: { turbo: false } %>
     </div>
   </div>
 <% end %>
-
 <script>
   $(document).ready(function() {
     const salesPerson       = document.getElementById("sales_person");
@@ -103,10 +96,10 @@
         itemsSoldValid;
 
       const inconsistentAmounts =
-        (amount > 0 && items === 0) ||   
+        (amount > 0 && items === 0) ||
         (amount === 0 && items > 0) ||
         (amount === 0 && items === 0 && sales_floor_hours === 0 && project_hours === 0) ||
-        (amount > 0 && items > 0 && sales_floor_hours === 0)   
+        (amount > 0 && items > 0 && sales_floor_hours === 0)
 
       const showSubmit = requiredFieldsFilled && !inconsistentAmounts;
 

@@ -25,7 +25,7 @@
 </style>
 <% if @start_date.blank? || @end_date.blank? %>
   <div class="d-flex justify-content-center align-items-center" id="selectDateRange">
-    <div class="card p-4" style="max-width: 400px; width: 100%;">
+    <div class="card p-4" style="max-width: 380px; width: 100%;">
       <h4 class="mb-3 text-center">Select a Date Range</h4>
       <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
         <div class="mb-3">
@@ -33,7 +33,7 @@
           <div class="input-group">
             <%= form.text_field :start_date, class: "form-control datepicker", required: true, value: (params[:start_date].presence || Date.current.strftime("%m/%d/%Y")) %>
             <span class="input-group-text datepicker-icon">
-              <i class="bi bi-calendar-date"></i>
+              <i class="bi bi-calendar3"></i>
             </span>
           </div>
         </div>
@@ -42,7 +42,7 @@
           <div class="input-group">
             <%= form.text_field :end_date, class: "form-control datepicker", required: true, value: (params[:end_date].presence || Date.current.strftime("%m/%d/%Y")) %>
             <span class="input-group-text datepicker-icon">
-              <i class="bi bi-calendar-date"></i>
+              <i class="bi bi-calendar3"></i>
             </span>
           </div>
         </div>
@@ -92,7 +92,7 @@
               <div class="input-group">
                 <%= form.text_field :start_date, class: "form-control datepicker", required: true, value: (params[:start_date].presence || Date.current.strftime("%m/%d/%Y")) %>
                 <span class="input-group-text datepicker-icon">
-                  <i class="bi bi-calendar-date"></i>
+                  <i class="bi bi-calendar3"></i>
                 </span>
               </div>
             </div>
@@ -101,7 +101,7 @@
               <div class="input-group">
                 <%= form.text_field :end_date, class: "form-control datepicker", required: true, value: (params[:end_date].presence || Date.current.strftime("%m/%d/%Y")) %>
                 <span class="input-group-text datepicker-icon">
-                  <i class="bi bi-calendar-date"></i>
+                  <i class="bi bi-calendar3"></i>
                 </span>
               </div>
             </div>
