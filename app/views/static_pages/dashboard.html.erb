@@ -374,11 +374,11 @@
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${formattedDate}</td>
-              <td>${itemsSold}</td>
+              <td>${itemsSold.toLocaleString()}</td>
               <td>$${dailyTotal.toLocaleString()}</td>
-              <td>${dailySalesHours}</td>
+              <td>${dailySalesHours.toLocaleString()}</td>
               <td>$${dailyAvg}</td>
-              <td>${dailyProjectHours}</td>
+              <td>${dailyProjectHours.toLocaleString()}</td>
             `;
             tbody.appendChild(row);
           });
@@ -396,11 +396,11 @@
             const totalRow = document.createElement('tr');
             totalRow.innerHTML = `
               <td><strong>Grand Total</strong></td>
-              <td><strong>${personData.totals.itemsSold}</strong></td>
+              <td><strong>${personData.totals.itemsSold.toLocaleString()}</strong></td>
               <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
-              <td><strong>${personData.totals.salesFloorHours}</strong></td>
+              <td><strong>${personData.totals.salesFloorHours.toLocaleString()}</strong></td>
               <td><strong>$${formatMoney(personData.avgPerHour)}</strong></td>
-              <td><strong>${personData.totals.projectHours}</strong></td>
+              <td><strong>${personData.totals.projectHours.toLocaleString()}</strong></td>
             `;
             tbody.appendChild(totalRow);
             addPadding(totalRow);
