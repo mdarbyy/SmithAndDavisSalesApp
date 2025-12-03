@@ -204,7 +204,7 @@
         return row;
       }
 
-      function formatMoney(value) {
+      function formatNumber(value) {
         if (value % 1 === 0) {
           return value.toLocaleString();
         }
@@ -369,15 +369,13 @@
             ? (dailyTotal / dailySalesHours)
             : 0;
 
-            const dailyAvg = formatMoney(dailyAvgRaw);
-
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${formattedDate}</td>
               <td>${itemsSold.toLocaleString()}</td>
               <td>$${dailyTotal.toLocaleString()}</td>
               <td>${dailySalesHours.toLocaleString()}</td>
-              <td>$${dailyAvg}</td>
+              <td>$${formatNumber(dailyAvgRaw)}</td>
               <td>${dailyProjectHours.toLocaleString()}</td>
             `;
             tbody.appendChild(row);
@@ -399,7 +397,7 @@
               <td><strong>${personData.totals.itemsSold.toLocaleString()}</strong></td>
               <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
               <td><strong>${personData.totals.salesFloorHours.toLocaleString()}</strong></td>
-              <td><strong>$${formatMoney(personData.avgPerHour)}</strong></td>
+              <td><strong>$${formatNumber(personData.avgPerHour)}</strong></td>
               <td><strong>${personData.totals.projectHours.toLocaleString()}</strong></td>
             `;
             tbody.appendChild(totalRow);
@@ -448,7 +446,7 @@
                 </div>
                 ${grandTotals.avgPerHour > 0 ? `
                   <div style="font-size: 14px; font-weight: bold; color: #007bff;">
-                    $${formatMoney(grandTotals.avgPerHour)}/hr
+                    $${formatNumber(grandTotals.avgPerHour)}/hr
                   </div>
                 ` : ''}
               </div>
@@ -502,7 +500,7 @@
                   labelString = `<div style="text-align: center;">
                     <div>${sales}</div>
                     <div style="font-size: 12px; color: #007bff;">
-                      $${formatMoney(avg)}/hr
+                      $${formatNumber(avg)}/hr
                     </div>
                     <div style="font-size: 12px; color: #777;">
                       ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
@@ -561,14 +559,14 @@
           // --- Row 2: Total amount
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
-          totalAmountCell.value = `Total Amount Sold: $${formatMoney(grandTotals.amountSold)}`
+          totalAmountCell.value = `Total Amount Sold: $${formatNumber(grandTotals.amountSold)}`
           totalAmountCell.font = { size: 12 };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
           // --- Row 3: Average Per Hour
           ws.mergeCells('A3:H3');
           const avgCell = ws.getCell('A3');
-          avgCell.value = `Average Per Hour: $${formatMoney(grandTotals.avgPerHour)}`;
+          avgCell.value = `Average Per Hour: $${formatNumber(grandTotals.avgPerHour)}`;
           avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
@@ -601,8 +599,8 @@
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
 
-            const itemsSold = totals.itemsSold > 0 ? totals.itemsSold : '---';
-            const amountSold = totals.amountSold > 0 ? '$' + formatMoney(totals.amountSold) : '---';
+            const itemsSold = totals.itemsSold > 0 ? formatNumber(totals.itemsSold) : '---';
+            const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '---';
 
             const row = ws.addRow([
               name,
@@ -627,7 +625,7 @@
             const rowIndex = i + 7;
             const avgVal = p.avgPerHour;
             if(avgVal > 0){
-              ws.getCell(rowIndex, 7).value = `$${formatMoney(avgVal)}`;
+              ws.getCell(rowIndex, 7).value = `$${formatNumber(avgVal)}`;
             } else {
               ws.getCell(rowIndex, 7).value = `---`;
             }
