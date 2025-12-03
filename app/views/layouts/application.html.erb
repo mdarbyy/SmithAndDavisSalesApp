@@ -659,10 +659,10 @@
           totalElement.innerText = newCount >= 0 ? newCount : 0;
         }
 
-        alertMessage(`${entityName} was deleted`, "SUCCESS", 2500);
+        alertMessage(`${entityName} was deleted`, "SUCCESS", 1000);
       } else {
         const errorMsg = data.errors ? data.errors.join(", ") : `Failed to delete ${entityName}`;
-        alertMessage(errorMsg, "DANGER", 4000);
+        alertMessage(errorMsg, "DANGER", 2000);
       }
     })
     .catch(error => {
@@ -694,7 +694,7 @@
     DANGER: null
   };
 
-  function alertMessage(message, messageType, delayTime = 2500) {
+  function alertMessage(message, messageType, delayTime = 1000) {
     console.log(message);
     
     var alertTypeKey = messageType.toUpperCase();
@@ -735,16 +735,12 @@
     $("#alertContainer").show();
     
     // Auto-dismiss logic
-    if (messageType !== "INFO" || !isJobStatusAlert) {
-      $alert.delay(delayTime).fadeOut(250, function() {
-        $(this).remove();
-        if (currentAlertIds[alertTypeKey] === alertId) {
-          currentAlertIds[alertTypeKey] = null;
-        }
-      });
-    } else if (isJobStatusAlert) {
-      currentAlertIds[alertTypeKey] = alertId;
-    }
+    $alert.delay(delayTime).fadeOut(250, function() {
+      $(this).remove();
+      if (currentAlertIds[alertTypeKey] === alertId) {
+        currentAlertIds[alertTypeKey] = null;
+      }
+    });
   }
 
   function uuidv4() {
@@ -807,10 +803,10 @@
   });
 
   <% if flash[:success] %>
-    alertMessage('<%= j flash[:success] %>','SUCCESS', 2500);
+    alertMessage('<%= j flash[:success] %>','SUCCESS', 1000);
   <% elsif flash[:danger] %>
-    alertMessage('<%= j flash[:danger] %>','DANGER', 3000);
+    alertMessage('<%= j flash[:danger] %>','DANGER', 2000);
   <% elsif flash[:notice] %>
-    alertMessage('<%= j flash[:notice] %>','INFO',2500);
+    alertMessage('<%= j flash[:notice] %>','INFO', 1000);
   <% end %>
 </script>
