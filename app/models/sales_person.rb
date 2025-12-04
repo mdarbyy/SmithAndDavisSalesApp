@@ -10,8 +10,13 @@ class SalesPerson < ApplicationRecord
   private 
   
   def capitalize_sales_person
-    self.first_name = first_name.strip.capitalize if first_name.present?
-    self.last_name  = last_name.strip.capitalize if last_name.present?
+    if first_name.present?
+      self.first_name = first_name.strip.split.map(&:capitalize).join(" ")
+    end
+
+    if last_name.present?
+      self.last_name = last_name.strip.split.map(&:capitalize).join(" ")
+    end
   end
   
   def find_records

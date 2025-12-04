@@ -4,11 +4,11 @@
       <label class="col-form-label"><strong>Sales Person</strong></label>
       <select id="sales_person" class="form-control select2">
         <%= options_from_collection_for_select(
-              SalesPerson.order(:first_name, :last_name),
-              :id,
-              ->(sp) { "#{sp.first_name} #{sp.last_name}" },
-              sales_record.sales_person_id
-            ) %>
+          SalesPerson.order(:first_name, :last_name),
+          :id,
+          ->(sp) { "#{sp.first_name} #{sp.last_name}" },
+          sales_record.sales_person_id
+        ) %>
       </select>
     </div>
   </div>
@@ -27,23 +27,19 @@
     </div>
   </div>
   <div class="row g-3 mb-3 align-items-center">
-    <div class="col-6">
+    <div class="col-12">
       <label class="col-form-label"><strong>Amount Sold</strong></label>
       <%= form.number_field :amount_sold, step: 1, class: "form-control", id:"amount_sold" %>
-    </div>
-    <div class="col-6">
-      <label class="col-form-label"><strong>Items Sold</strong></label>
-      <%= form.number_field :items_sold, step: 1, value: 1, class: "form-control", id:"items_sold" %>
     </div>
   </div>
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-6">
-      <label class="col-form-label"><strong>Project Hours</strong></label>
-      <%= form.number_field :project_hours, placeholder: 0, step: :any, class: "form-control", id:"project_hours" %>
-    </div>
-    <div class="col-6">
       <label class="col-form-label"><strong>Sales Floor Hours</strong></label>
       <%= form.number_field :sales_floor_hours, step: :any, class: "form-control", id:"sales_floor_hours" %>
+    </div>
+    <div class="col-6">
+      <label class="col-form-label"><strong>Project Hours</strong></label>
+      <%= form.number_field :project_hours, placeholder: 0, step: :any, class: "form-control", id:"project_hours" %>
     </div>
   </div>
   <div class="row" id="submit_btn_row" style="display: none;">
@@ -60,9 +56,8 @@
     const sellDate          = document.getElementById("sell_date");
     const hiddenSellDate    = document.getElementById("hidden_sell_date");
     const amountSold        = document.getElementById("amount_sold");
-    const itemsSold         = document.getElementById("items_sold");
-    const projectHours      = document.getElementById("project_hours");
     const salesFloorHours   = document.getElementById("sales_floor_hours");
+    const projectHours      = document.getElementById("project_hours");
     const submitRow         = document.getElementById("submit_btn_row");
     const form              = document.getElementById("sales_record_form");
 
@@ -81,33 +76,20 @@
       const amount = parseFloat(amountSold.value) || 0;
       const sales_floor_hours = parseFloat(salesFloorHours.value) || 0;
       const project_hours  = parseFloat(projectHours.value) || 0;
-      const items = parseInt(itemsSold.value) || 0;
-
       const amountSoldValid = amount >= 0;
       const salesFloorHoursValid = sales_floor_hours >= 0;
       const projectHoursValid = project_hours >= 0;
-      const itemsSoldValid = items >= 0;
 
-      const requiredFieldsFilled =
-        salesPerson.value &&
-        sellDate.value &&
-        amountSoldValid &&
-        projectHoursValid &&
-        salesFloorHoursValid &&
-        itemsSoldValid;
+      const requiredFieldsFilled = salesPerson.value && sellDate.value && amountSoldValid && salesFloorHoursValid && projectHoursValid;
 
-      const inconsistentAmounts =
-        (amount > 0 && items === 0) ||
-        (amount === 0 && items > 0) ||
-        (amount === 0 && items === 0 && sales_floor_hours === 0 && project_hours === 0) ||
-        (amount > 0 && items > 0 && sales_floor_hours === 0)
+      const inconsistentAmounts = (amount === 0 && sales_floor_hours === 0 && project_hours === 0) || (amount > 0 && sales_floor_hours === 0)
 
       const showSubmit = requiredFieldsFilled && !inconsistentAmounts;
 
       submitRow.style.display = showSubmit ? "flex" : "none";
     }
 
-    [amountSold, itemsSold, projectHours, salesFloorHours].forEach(el => {
+    [amountSold, salesFloorHours, projectHours].forEach(el => {
       el.addEventListener("change", checkAllFieldsFilled);
       el.addEventListener("input", checkAllFieldsFilled);
     });

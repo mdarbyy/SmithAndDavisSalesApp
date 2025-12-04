@@ -1,9 +1,8 @@
 <tr>
   <td><%= link_to sales_record.sell_date.strftime("%m/%d/%Y"), edit_sales_record_path(sales_record, return_to: request.fullpath), class: "nav-link" %></td>
   <td><%= number_to_currency(sales_record.amount_sold, precision: 0) %></td>
-  <td><%= sales_record.items_sold %></td>
-  <td><%= sales_record.project_hours %></td>
   <td><%= sales_record.sales_floor_hours %></td>
+  <td><%= sales_record.project_hours %></td>
   <td>
     <button class="btn btn-delete"
       type="button"

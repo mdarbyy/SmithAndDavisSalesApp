@@ -10,7 +10,6 @@ class SalesRecord < ApplicationRecord
 
   def ensure_fields_filled
     self.amount_sold       ||= 0
-    self.items_sold        ||= 0
     self.sales_floor_hours ||= 0
     self.project_hours     ||= 0
   end

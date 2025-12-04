@@ -37,6 +37,7 @@
             </span>
           </div>
         </div>
+
         <div class="mb-3">
           <%= form.label :end_date, "End Date", class: "form-label" %>
           <div class="input-group">
@@ -46,6 +47,7 @@
             </span>
           </div>
         </div>
+
         <div class="d-flex justify-content-end">
           <%= form.submit "View Dashboard", class: "btn btn-main", data: { turbo: false }, onclick:"show_spinner()" %>
         </div>
@@ -66,10 +68,9 @@
               <thead>
                 <tr>
                   <th class="stick" scope="col">Sell Date</th>
-                  <th class="stick" scope="col">Items Sold</th>
                   <th class="stick" scope="col">Amount Sold</th>
-                  <th class="stick" scope="col">Sales Floor Hours</th>
-                  <th class="stick" scope="col">Average Per Hour</th>
+                  <th class="stick" scope="col" style="min-width: 120px;">Sales Floor Hours</th>
+                  <th class="stick" scope="col" style="min-width: 120px;">Average Per Hour</th>
                   <th class="stick" scope="col">Project Hours</th>
                 </tr>
               </thead>
@@ -87,6 +88,7 @@
         <div class="card mb-3 p-4">
           <h5 class="text-center mb-3">Change the Date Range</h5>
           <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
+            
             <div class="mb-3">
               <%= form.label :start_date, "Start Date", class: "form-label" %>
               <div class="input-group">
@@ -96,6 +98,7 @@
                 </span>
               </div>
             </div>
+
             <div class="mb-3">
               <%= form.label :end_date, "End Date", class: "form-label" %>
               <div class="input-group">
@@ -105,6 +108,7 @@
                 </span>
               </div>
             </div>
+
             <div class="d-flex justify-content-end">
               <%= form.submit "Submit", class: "btn btn-main", data: { turbo: false }, onclick:"show_spinner()" %>
             </div>
@@ -114,13 +118,13 @@
           <h5 class="mb-2 text-center" id="filterHeader">Filters</h5>
           <div class="mb-3 d-flex flex-column align-items-center">
             <select id="sales-person-filter"
-                    class="selectpicker btn-secondary filter-select"
-                    multiple
-                    data-actions-box="true"
-                    title="Sales People"
-                    data-selected-text-format="count"
-                    data-count-selected-text="{0} people selected"
-                    data-width="100%">
+              class="selectpicker btn-secondary filter-select"
+              multiple
+              data-actions-box="true"
+              title="Sales People"
+              data-selected-text-format="count"
+              data-count-selected-text="{0} people selected"
+              data-width="100%">
             </select>
           </div>
           <div class="d-flex flex-column align-items-center" id="sellDateFilter">
@@ -188,6 +192,7 @@
       const salesRecords = <%= raw @sales_records.to_json %>;
       const salesPeople = <%= raw @sales_people.to_json %>;
       const salesPeopleWithoutSales = <%= raw @sales_people_without_sales.to_json %>;
+
     	console.log("Sales Records:", salesRecords);
     	console.log("Sales People:", salesPeople);
       console.log("Sales People Without Sales: " + salesPeopleWithoutSales);
@@ -261,9 +266,8 @@
         const totalsByPerson = {};
         const grandTotals = {
           amountSold: 0,
-          itemsSold: 0,
-          projectHours: 0,
           salesFloorHours: 0,
+          projectHours: 0,
           avgPerHour: 0
         };
 
@@ -276,34 +280,29 @@
           records: {},
             totals: {
               amountSold: 0,
-              itemsSold: 0,
-              projectHours: 0,
-              salesFloorHours: 0
+              salesFloorHours: 0,
+              projectHours: 0
             },
             avgPerHour: 0
           };
 
           const amountSold = Number(record.amount_sold);
-          const itemsSold = Number(record.items_sold);
-          const projectHours = Number(record.project_hours);
           const salesFloorHours = Number(record.sales_floor_hours);
+          const projectHours = Number(record.project_hours);
 
           totalsByPerson[personId].records[sellDate] = {
             amountSold,
-            itemsSold,
-            projectHours,
-            salesFloorHours
+            salesFloorHours,
+            projectHours
           };
 
           totalsByPerson[personId].totals.amountSold += amountSold;
-          totalsByPerson[personId].totals.itemsSold += itemsSold;
-          totalsByPerson[personId].totals.projectHours += projectHours;
           totalsByPerson[personId].totals.salesFloorHours += salesFloorHours;
+          totalsByPerson[personId].totals.projectHours += projectHours;
 
           grandTotals.amountSold += amountSold;
-          grandTotals.itemsSold += itemsSold;
-          grandTotals.projectHours += projectHours;
           grandTotals.salesFloorHours += salesFloorHours;
+          grandTotals.projectHours += projectHours;
         });
 
         Object.values(totalsByPerson).forEach(person => {
@@ -324,9 +323,8 @@
         const filteredData = Object.values(totalsByPerson).map(p => ({
           name: p.name,
           totalSales: p.totals.amountSold,
-          totalProjectHours: p.totals.projectHours,
           totalSalesHours: p.totals.salesFloorHours,
-          itemsSold: p.totals.itemsSold,
+          totalProjectHours: p.totals.projectHours,
           avgPerHour: p.avgPerHour
         })).sort((a, b) => b.totalSales - a.totalSales);
 
@@ -334,9 +332,8 @@
         const data = filteredData.map(p => ({
           y: p.totalSales,
           custom: {
-            project_hours: p.totalProjectHours,
-            items_sold: p.itemsSold,
             sales_hours: p.totalSalesHours,
+            project_hours: p.totalProjectHours,
             avg: p.avgPerHour
           }
         }));
@@ -362,9 +359,8 @@
           sortedRecords.forEach(([isoDate, record]) => {
             const formattedDate = luxon.DateTime.fromISO(isoDate).toFormat('MM/dd/yyyy');
             const dailyTotal = record.amountSold;
-            const itemsSold = record.itemsSold;
-            const dailyProjectHours = record.projectHours;
             const dailySalesHours = record.salesFloorHours;
+            const dailyProjectHours = record.projectHours;
             const dailyAvgRaw = dailySalesHours > 0 && dailyTotal > 0
             ? (dailyTotal / dailySalesHours)
             : 0;
@@ -372,7 +368,6 @@
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${formattedDate}</td>
-              <td>${itemsSold.toLocaleString()}</td>
               <td>$${dailyTotal.toLocaleString()}</td>
               <td>${dailySalesHours.toLocaleString()}</td>
               <td>$${formatNumber(dailyAvgRaw)}</td>
@@ -394,7 +389,6 @@
             const totalRow = document.createElement('tr');
             totalRow.innerHTML = `
               <td><strong>Grand Total</strong></td>
-              <td><strong>${personData.totals.itemsSold.toLocaleString()}</strong></td>
               <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
               <td><strong>${personData.totals.salesFloorHours.toLocaleString()}</strong></td>
               <td><strong>$${formatNumber(personData.avgPerHour)}</strong></td>
@@ -417,7 +411,7 @@
         Highcharts.chart('total-sales-chart', {
           chart: {
             type: 'column',
-            marginTop: 160,
+            marginTop: 115,
             scrollablePlotArea: {
               minWidth: categories.length * 100,
               scrollPositionX: 1
@@ -450,9 +444,6 @@
                   </div>
                 ` : ''}
               </div>
-              <div style="font-size: 14px; font-weight: bold; color: #777;">
-                ${grandTotals.itemsSold.toLocaleString()} item${grandTotals.itemsSold === 1 ? ' sold' : 's sold'}
-              </div>
             `
           },
           xAxis: {
@@ -484,16 +475,12 @@
               useHTML: true,
               formatter: function() {
                 const sales = '$' + Highcharts.numberFormat(this.y, 0, '.', ',');
-                const items_sold = this.point.custom?.items_sold || 0;
-                const project_hours = this.point.custom?.project_hours || 0;
                 const sales_hours = this.point.custom?.sales_hours || 0;
+                const project_hours = this.point.custom?.project_hours || 0;
                 const avg = this.point.custom?.avg || 0;
 
                 let labelString = `<div style="text-align: center;">
                   <div>${sales}</div>
-                  <div style="font-size: 12px; color: #777;">
-                    ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
-                  </div>
                 </div>`;
 
                 if(avg > 0){
@@ -501,9 +488,6 @@
                     <div>${sales}</div>
                     <div style="font-size: 12px; color: #007bff;">
                       $${formatNumber(avg)}/hr
-                    </div>
-                    <div style="font-size: 12px; color: #777;">
-                      ${items_sold.toLocaleString()} item${items_sold === 1 ? ' sold' : 's sold'}
                     </div>
                   </div>`;
                 }
@@ -524,6 +508,12 @@
           }],
           credits: {
             enabled: false
+          },
+          events: {
+            load: function () {
+              const container = document.getElementById('total-sales-chart').parentElement;
+              container.scrollLeft = 0;  // force scroll to far left
+            }
           }
         });
 
@@ -570,41 +560,33 @@
           avgCell.font = { size: 12 };
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
-          // --- Row 4: Total items
-          ws.mergeCells('A4:H4');
-          const totalItemsCell = ws.getCell('A4');
-          totalItemsCell.value = `Total Items Sold: ${grandTotals.itemsSold.toLocaleString()}`;
-          totalItemsCell.font = { size: 12 };
-          totalItemsCell.alignment = { horizontal: 'center', vertical: 'middle' };
-
-          // --- Spacer (row 5)
+          // --- Spacer (row 4)
           ws.addRow([]);
 
-          // --- Header (row 6)
+          // --- Header (row 5)
           const headerRow = ws.addRow([
+            'Rank',
             'Name',
-            'Items Sold',
             'Amount Sold',
             'Sales Floor Hours',
             'Project Hours',
             'Rank',
-            'Average Per Hour',
-            'Name'
+            'Name',
+            'Average Per Hour'
           ]);
           headerRow.font = { bold: true };
           headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+          headerRow.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
           headerRow.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
 
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
-
-            const itemsSold = totals.itemsSold > 0 ? formatNumber(totals.itemsSold) : '---';
             const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '---';
 
             const row = ws.addRow([
+              rank,
               name,
-              itemsSold,
               amountSold,
               totals.salesFloorHours,
               totals.projectHours,
@@ -613,23 +595,24 @@
               null
             ]);
 
-            // style Rank cell (F)
+            // style Rank cells (A & F)
+            row.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.alignment = { horizontal: 'center', vertical: 'middle' };
 
             rank++;
           });
 
-          // Data rows start at row 7
+          // Data rows start at row 6
           sortedByAvg.forEach((p, i) => {
-            const rowIndex = i + 7;
+            const rowIndex = i + 6;
             const avgVal = p.avgPerHour;
+            ws.getCell(rowIndex, 7).value = p.name;
             if(avgVal > 0){
-              ws.getCell(rowIndex, 7).value = `$${formatNumber(avgVal)}`;
+              ws.getCell(rowIndex, 8).value = `$${formatNumber(avgVal)}`;
             } else {
-              ws.getCell(rowIndex, 7).value = `---`;
+              ws.getCell(rowIndex, 8).value = `---`;
             }
-            ws.getCell(rowIndex, 8).value = p.name;
 
             ws.getCell(rowIndex, 7).alignment = { horizontal: 'center', vertical: 'middle' };
             ws.getCell(rowIndex, 8).alignment = { horizontal: 'center', vertical: 'middle' };
@@ -645,8 +628,8 @@
 
           salesPeopleWithoutSales.forEach(person => {
             const row = ws.addRow([
+              rank,
               `${person.first_name} ${person.last_name}`,
-              '---',
               '---',
               '---',
               '---',
@@ -660,13 +643,14 @@
               row.getCell(c).alignment = { horizontal: 'center', vertical: 'middle' };
             });
 
-            // Style Rank cell (F)
+            // Style Rank cell (A & F)
+            row.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
 
             rank++; // increment rank for next row
           });
 
-          const widths = [25, 25, 25, 25, 25, 10, 25, 25];
+          const widths = [10, 25, 20, 20, 20, 10, 25, 20];
           widths.forEach((w, i) => (ws.getColumn(i + 1).width = w));
 
           const buf = await wb.xlsx.writeBuffer();
