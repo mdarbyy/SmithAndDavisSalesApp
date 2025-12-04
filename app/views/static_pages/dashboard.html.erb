@@ -411,10 +411,10 @@
         Highcharts.chart('total-sales-chart', {
           chart: {
             type: 'column',
-            marginTop: 115,
+            marginTop: 150,
             scrollablePlotArea: {
               minWidth: categories.length * 100,
-              scrollPositionX: 1
+              scrollPositionX: 0
             }
           },
           title: {
@@ -508,12 +508,6 @@
           }],
           credits: {
             enabled: false
-          },
-          events: {
-            load: function () {
-              const container = document.getElementById('total-sales-chart').parentElement;
-              container.scrollLeft = 0;  // force scroll to far left
-            }
           }
         });
 
