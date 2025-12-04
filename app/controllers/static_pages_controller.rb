@@ -1,7 +1,7 @@
 class StaticPagesController < ApplicationController
   def dashboard
 
-    if params[:start_date].blank? || params[:end_date].blank?
+    if params[:start_date].blank? or params[:end_date].blank?
       return
     end
 
@@ -10,7 +10,7 @@ class StaticPagesController < ApplicationController
 
     @sales_records = SalesRecord.where(sell_date: @start_date..@end_date)
     if @sales_records.count == 0
-      redirect_to request.referrer, danger: "No sales were recorded within this date range"
+      redirect_to request.referrer, danger: "No sales were recorded within that date range"
       return
     end
 
