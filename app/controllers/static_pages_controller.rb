@@ -1,6 +1,5 @@
 class StaticPagesController < ApplicationController
   def dashboard
-
     if params[:start_date].blank? or params[:end_date].blank?
       return
     end

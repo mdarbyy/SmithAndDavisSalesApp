@@ -63,13 +63,13 @@ class SalesPeopleController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_sales_person
-      @sales_person = SalesPerson.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_sales_person
+    @sales_person = SalesPerson.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def sales_person_params
-      params.require(:sales_person).permit(:first_name, :last_name, :is_active)
-    end
+  # Only allow a list of trusted parameters through.
+  def sales_person_params
+    params.require(:sales_person).permit(:first_name, :last_name, :is_active)
+  end
 end

@@ -75,13 +75,13 @@ class SalesRecordsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_sales_record
-      @sales_record = SalesRecord.find(params[:id])
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_sales_record
+    @sales_record = SalesRecord.find(params[:id])
+  end
 
-    # Only allow a list of trusted parameters through.
-    def sales_record_params
-      params.require(:sales_record).permit(:sell_date, :amount_sold, :items_sold, :sales_floor_hours, :project_hours, :sales_person_id)
-    end
+  # Only allow a list of trusted parameters through.
+  def sales_record_params
+    params.require(:sales_record).permit(:sell_date, :amount_sold, :items_sold, :sales_floor_hours, :project_hours, :sales_person_id)
+  end
 end
