@@ -200,6 +200,14 @@
 
       console.log("Height: " + window.innerHeight);
 
+      const mainColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--main-color')
+      .trim();
+
+      const avgColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bargraph-avg-color')
+      .trim();
+
       const salesRecords = <%= raw @sales_records.to_json %>;
       const salesPeople = <%= raw @sales_people.to_json %>;
       const salesPeopleWithoutSales = <%= raw @sales_people_without_sales.to_json %>;
@@ -465,10 +473,10 @@
                   $${grandTotals.amountSold.toLocaleString()}
                 </div>
                 ${grandTotals.avgPerHour > 0 ? `
-                  <div style="font-size: 14px; font-weight: bold; color: #007bff;">
+                  <div style="font-size: 14px; font-weight: bold; color: ${avgColor};">
                     $${formatNumber(grandTotals.avgPerHour)}/hr
                   </div>
-                ` : `<div style="font-size: 14px; font-weight: bold; color: #007bff;">
+                ` : `<div style="font-size: 14px; font-weight: bold; color: ${avgColor};">
                     $0/hr
                   </div>`}
               </div>
@@ -515,7 +523,7 @@
                 if(avg > 0){
                   labelString = `<div style="text-align: center;">
                     <div>${sales}</div>
-                    <div style="font-size: 12px; color: #007bff;">
+                    <div style="font-size: 12px; color: ${avgColor};">
                       $${formatNumber(avg)}/hr
                     </div>
                   </div>`;
@@ -533,7 +541,7 @@
           series: [{
             name: 'Sales',
             data: data,
-            color: '#193856'
+            color: mainColor
           }],
           credits: {
             enabled: false
