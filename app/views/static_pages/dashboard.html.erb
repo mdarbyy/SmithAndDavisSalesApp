@@ -82,6 +82,7 @@
       </div>
     </div>
   </div>
+
   <div class="container-fluid">
     <div class="row main-content-row">
       <div class="col-12 col-md-3 left-col">
@@ -114,8 +115,10 @@
             </div>
           <% end %>
         </div>
+
         <div class="card p-4" id="filterCard">
           <h5 class="mb-2 text-center" id="filterHeader">Filters</h5>
+          
           <div class="mb-3 d-flex flex-column align-items-center">
             <select id="sales-person-filter"
               class="selectpicker btn-secondary filter-select"
@@ -127,6 +130,7 @@
               data-width="100%">
             </select>
           </div>
+          
           <div class="d-flex flex-column align-items-center" id="sellDateFilter">
             <select id="sell-date-filter"
               class="selectpicker btn-secondary filter-select"
@@ -144,9 +148,9 @@
         <div class="card dashboard-content">
           <div class="card-body" id="dashboardTabsContent">
             <div class="mb-1 d-flex justify-content-end">
-              <button id="export-total-sales-chart" class="btn btn-main">Export to Excel</button>
+              <button id="export-sales-chart" class="btn btn-main">Export to Excel</button>
             </div>
-            <div id="total-sales-chart"></div>
+            <div id="sales-chart"></div>
           </div>
         </div>
       </div>
@@ -338,7 +342,7 @@
           }
         }));
 
-        function showTotalSalesForClickedPerson(clickedName){
+        function showSalesForClickedPerson(clickedName){
           const salesPersonId = Object.keys(salesPersonIdToName).find(
             id => salesPersonIdToName[id] === clickedName
           );
@@ -408,7 +412,7 @@
           modal.show();
         }
 
-        Highcharts.chart('total-sales-chart', {
+        Highcharts.chart('sales-chart', {
           chart: {
             type: 'column',
             marginTop: 150,
@@ -442,7 +446,9 @@
                   <div style="font-size: 14px; font-weight: bold; color: #007bff;">
                     $${formatNumber(grandTotals.avgPerHour)}/hr
                   </div>
-                ` : ''}
+                ` : `<div style="font-size: 14px; font-weight: bold; color: #007bff;">
+                    $0/hr
+                  </div>`}
               </div>
             `
           },
@@ -452,7 +458,7 @@
           },
           yAxis: {
             min: 0,
-            title: { text: 'Total Sales ($)' }
+            title: { text: 'Sales ($)' }
           },
           tooltip: {
             enabled: false
@@ -463,7 +469,7 @@
               point: {
                 events: {
                   click: function() {
-                    showTotalSalesForClickedPerson(this.category);
+                    showSalesForClickedPerson(this.category);
                   }
                 }
               },
@@ -481,6 +487,7 @@
 
                 let labelString = `<div style="text-align: center;">
                   <div>${sales}</div>
+                  <div>$0/hr</div>
                 </div>`;
 
                 if(avg > 0){
@@ -491,7 +498,7 @@
                     </div>
                   </div>`;
                 }
-
+                
                 return labelString;
                 },
                 style: {
@@ -502,7 +509,7 @@
             }
           },
           series: [{
-            name: 'Total Sales',
+            name: 'Sales',
             data: data,
             color: '#193856'
           }],
@@ -511,7 +518,7 @@
           }
         });
 
-        $('#export-total-sales-chart').off('click').on('click', async () => {
+        $('#export-sales-chart').off('click').on('click', async () => {
           const startDate = "<%= @start_date.strftime('%m/%d/%Y') %>";
           const endDate = "<%= @end_date.strftime('%m/%d/%Y') %>";
 
@@ -525,7 +532,22 @@
 
           // --- Build workbook
           const wb = new ExcelJS.Workbook();
-          const ws = wb.addWorksheet('Total Sales');
+          const ws = wb.addWorksheet('Sales Report', {
+            pageSetup: {
+              orientation: 'landscape',
+              margins: {
+                left: 0.25,
+                right: 0.25,
+                top: 0.50,
+                bottom: 0.50,
+                header: 0.3,
+                footer: 0.3
+              },
+              fitToWidth: 1,
+              fitToHeight: 0,
+              showGridLines: true 
+            }
+          });
 
           // --- Title (row 1)
           ws.mergeCells('A1:H1');
