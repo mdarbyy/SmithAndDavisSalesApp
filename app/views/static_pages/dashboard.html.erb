@@ -25,7 +25,6 @@
 </style>
 
 <% if @start_date.blank? || @end_date.blank? %>
-  
   <div class="d-flex justify-content-center align-items-center" id="selectDateRange">
     <div class="card p-4" style="max-width: 380px; width: 100%;">
       <h4 class="mb-3 text-center">Select a Date Range</h4>
@@ -56,9 +55,7 @@
       <% end %>
     </div>
   </div>
-
 <% else %>
-
   <div class="modal fade" id="totalSalesModal" tabindex="-1" aria-labelledby="totalSalesModalLabel" aria-hidden="true">
     <div class="modal-dialog custom-modal">
       <div class="modal-content">
@@ -160,11 +157,9 @@
       </div>
     </div>
   </div>
-
 <% end %>
 
 <% if @start_date.present? and @end_date.present? %>
-  
   <script>
     $(document).ready(function() {
 
@@ -717,5 +712,4 @@
       processSalesRecords();
     });
   </script>
-
 <% end %>
