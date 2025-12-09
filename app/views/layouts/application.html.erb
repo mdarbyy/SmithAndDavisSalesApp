@@ -109,8 +109,9 @@
       </div>
     </div>
 
-    <div class="d-flex flex-column h-100 authenticated">
-      <div class="container-fluid h-100 d-flex flex-row p-0">
+    <div class="d-flex flex-column authenticated">
+      <div id="top-header"></div>
+      <div class="container-fluid d-flex flex-row p-0 flex-grow-1">
         <div class="position-relative d-flex flex-column" id="nav-sidebar">
           
           <div class="row">
@@ -138,7 +139,7 @@
           </div>  
         </div>
 
-        <div class="main-content">
+        <div class="main-content flex-grow-1 d-flex flex-column">
           <%= yield %>
         </div>
     </div>
