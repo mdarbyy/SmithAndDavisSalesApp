@@ -1,0 +1,36 @@
+<%= form_with(model: user, url: @user.new_record? ? admin_create_user_path : user_path(@user), local: true) do |form| %>
+  
+  <div class="row g-3 mb-3 align-items-center">
+    <div class="col-12">
+      <label class="col-form-label"><strong>First Name</strong></label>
+      <%= form.text_field :first_name, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3 align-items-center">
+    <div class="col-12">
+      <label class="col-form-label"><strong>Last Name</strong></label>
+      <%= form.text_field :last_name, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3 align-items-center">
+    <div class="col-12">
+      <label class="col-form-label"><strong>Email</strong></label>
+      <%= form.email_field :email, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3 align-items-center">
+    <div class="col-12">
+      <label class="col-form-label"><strong>Password</strong></label>
+      <%= form.text_field :password, class: 'form-control' %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 d-flex justify-content-end">
+      <%= form.submit 'Submit', class: 'btn btn-main', data: { turbo: false }, onclick:"show_spinner()" %>
+    </div>
+  </div>
+<% end %>

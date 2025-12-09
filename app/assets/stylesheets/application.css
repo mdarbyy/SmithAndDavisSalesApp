@@ -163,10 +163,8 @@ th:hover {
 }
 
 .authenticated, .unauthenticated {
-  height: 100dvh;            /* full dynamic viewport height */
-  overflow: hidden;           /* no page scroll */
-  display: flex;
-  flex-direction: column;
+  height: 100%; 
+  overflow: hidden;
 }
 
 .brand {
@@ -301,6 +299,17 @@ th:hover {
 .form-container h3 {
   margin-bottom: 20px;
   text-align: center;
+}
+
+.form-section {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
 }
 
 input.form-control.datepicker {

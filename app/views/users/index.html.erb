@@ -1,0 +1,94 @@
+<div class="d-flex flex-column m-1">
+
+  <div class="row">
+    <div class="col-4 d-flex justify-content-start">
+      <%= button_to 'Add User', new_user_path, method: :get, data: { turbo: false }, class: 'btn btn-main btn-left' %>
+    </div>
+    <div class="col-4 d-flex justify-content-center">
+      <h1>Users</h1>
+    </div>
+    <div class="col-4 d-flex justify-content-end">
+      <form role="search" class="d-flex search-form">
+        <input class="form-control" type="text" placeholder="Search" aria-label="Search" id="content-search">
+      </form>
+    </div>
+  </div>
+  
+  <div class="card m-1 p-2" id="content-main">
+    <div class="scrollable-table">
+      <% if @users.present? and @users.count > 0 %>
+        <table class="table content" id="content-table">
+          <thead>
+            <tr>
+              <th class="stick" scope="col"><a>Name</a></th>
+              <th class="stick" scope="col"><a>Email</a></th>
+            </tr>
+          </thead>
+          <tbody id="content-table-body">
+            <% @users.each do |user| %>
+              <%= render 'user', user: user %>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <table class="table content">
+          <thead>
+            <tr>
+              <th class="stick" scope="col"><a>Name</a></th>
+              <th class="stick" scope="col"><a>Email</a></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <h1 class="text-center">NO DATA</h1>
+      <% end %>
+
+      <div id="loading-spinner" style="display: none; text-align: center;">
+        <div class="spinner-border" style="color: #193856;" role="status">
+          <span class="sr-only"></span>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center;" id="recordCount">
+      <b>
+        Displaying <span id="currentCount"></span>
+        <span id="recordLabel"
+          data-singular="User"
+          data-plural="Users">
+        </span>
+      </b>
+    </div>
+  </div>
+</div>
+
+<script>
+  function loadMoreRecords() {
+    if (isLoading) return;
+    console.log("Loading Users");
+    $.ajax({
+      url: "users",
+      data: { offset: offset1 },
+      type: 'GET',
+      dataType: 'script',
+      cache: true,
+      beforeSend: function(){
+        isLoading = true;
+        $("#loading-spinner").show();
+      },
+      success: function(data) {
+        offset1 += 20;
+        console.log("Loaded Users");
+        var rowCount = $('#content-table tbody tr').length;
+        $('#currentCount').text(rowCount);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.error("AJAX Error:", textStatus, errorThrown);
+      },
+      complete: function(){
+        isLoading = false;
+        $("#loading-spinner").hide();
+      }
+    });
+  }
+</script>

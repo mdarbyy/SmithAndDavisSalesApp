@@ -1,0 +1,25 @@
+<div class="flex-fill d-flex flex-column m-1">
+  <div id="content-header">
+    <div class="row">
+      <div class="col-4">
+        <%= link_to 'Cancel', :back, class: 'btn btn-main btn-left' %>
+      </div>
+      <div class="col-4 d-flex justify-content-center">
+        <h1>Edit User</h1>
+      </div>
+      <div class="col-4 d-flex justify-content-end">
+        <%= button_to "Delete", user_path(@user), method: :delete, hidden: current_user.id == @user.id, class: "btn btn-danger btn-right", data: { id: @user.id }, onclick: "deleteUser(event)" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card m-1" id="content-main">
+    <div class="card-body scrollable-form">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+          <%= render "form", user: @user %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
