@@ -8,7 +8,7 @@
         <h1>Edit User</h1>
       </div>
       <div class="col-4 d-flex justify-content-end">
-        <%= button_to "Delete", user_path(@user), method: :delete, hidden: current_user.id == @user.id, class: "btn btn-danger btn-right", data: { id: @user.id }, onclick: "deleteUser(event)" %>
+        <%= button_to "Delete", user_path(@user), method: :delete, hidden: current_user.id == @user.id, class: "btn btn-delete btn-right", data: { id: @user.id }, onclick: "deleteUser(event)" %>
       </div>
     </div>
   </div>
