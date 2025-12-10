@@ -1,7 +1,7 @@
-class StaticPagesController < ApplicationController
+class DashboardController < ApplicationController
   before_action :authenticate_user!
   
-  def dashboard
+  def index
     if params[:start_date].blank? or params[:end_date].blank?
       return
     end

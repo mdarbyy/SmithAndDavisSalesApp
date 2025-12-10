@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "dashboard/index"
   devise_for(
     :users,
     controllers: {
@@ -13,7 +14,7 @@ Rails.application.routes.draw do
   resources :sales_records
   resources :sales_people
   post 'admin/users', to: 'users#create', as: 'admin_create_user'
-  get 'static_pages/dashboard', to: 'static_pages#dashboard', as: 'dashboard'
-
-  root "static_pages#dashboard"
+  get 'dashboard', to: 'dashboard#index', as: 'dashboard'
+  
+  root "dashboard#index"
 end
