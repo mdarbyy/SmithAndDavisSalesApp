@@ -3,11 +3,6 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
-    #@limit = Setting.first.entity_limit
-    #offset = params[:offset].to_i || 0
-    #@users = User.all.limit(@limit).offset(offset).order(email: :asc)
-    #@total_records = User.all.count
-
     @users = User.all.order(email: :asc)
 
     respond_to do |format|

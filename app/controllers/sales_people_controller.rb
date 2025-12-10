@@ -1,4 +1,5 @@
 class SalesPeopleController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_sales_person, only: %i[ show edit update destroy ]
 
   # GET /sales_people or /sales_people.json
