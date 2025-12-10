@@ -30,7 +30,7 @@
 <% if @start_date.blank? || @end_date.blank? %>
   <div class="d-flex justify-content-center align-items-center" id="selectDateRange">
     <div class="card p-4" style="max-width: 380px; width: 100%;">
-      <h4 class="mb-3 text-center">Select a Date Range</h4>
+      <h4 class="mb-3 text-center">Select a date range</h4>
       <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
         <div class="mb-3">
           <%= form.label :start_date, "Start Date", class: "form-label" %>
@@ -91,7 +91,7 @@
     <div class="row main-content-row">
       <div class="col-12 col-md-3 left-col">
         <div class="card mb-3 p-4">
-          <h5 class="text-center mb-3">Change the Date Range</h5>
+          <h5 class="text-center mb-3">Change the date range</h5>
           <%= form_with url: dashboard_path, method: :get, local: true do |form| %>
             
             <div class="mb-3">
@@ -593,7 +593,7 @@
           // --- Row 2: Total amount
           ws.mergeCells('A2:H2');
           const totalAmountCell = ws.getCell('A2');
-          totalAmountCell.value = `Total Amount Sold: $${formatNumber(grandTotals.amountSold)}`
+          totalAmountCell.value = `Amount Sold: $${formatNumber(grandTotals.amountSold)}`
           totalAmountCell.font = { size: 12 };
           totalAmountCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
