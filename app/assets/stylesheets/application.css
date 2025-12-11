@@ -4,7 +4,6 @@
   --delete-color: #a8504b;
   --delete-hover-color: #964642;
   --bargraph-avg-color: #1472ac;
-  --scroll-thumb: #babdc0;
 }
 
 html, body {
@@ -126,32 +125,6 @@ th:hover {
   height: calc(100vh - 155px);
   overflow-x: auto !important;
   overflow-y: hidden;
-}
-
-#sales-chart *,
-#sales-chart::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-#sales-chart *::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-}
-
-#sales-chart *,
-#sales-chart {
-  scrollbar-color: var(--scroll-thumb) transparent;
-  scrollbar-width: auto;
-}
-
-#top-header {
-  height: 70px;               
-  width: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 9000;
-  background: transparent;
-  pointer-events: none;
 }
 
 .authenticated {
@@ -372,19 +345,6 @@ input.form-control.datepicker {
   scrollbar-width: none;
 }
 
-.scrollable-table.show-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.scrollable-table.show-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-}
-
-.scrollable-table.show-scrollbar {
-  scrollbar-color: var(--scroll-thumb) transparent;
-  scrollbar-width: auto;
-}
-
 .search-form {
   height: 40px;
   margin-top: 5px;
@@ -402,19 +362,6 @@ input.form-control.datepicker {
   padding: 6px 12px;
   border: 1px solid #ced4da;
   border-radius: 4px;
-}
-
-.select2-container--default::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.select2-container--default::-webkit-scrollbar-thumb {
-  background: var(--scroll-thumb);
-}
-
-.select2-container--default {
-  scrollbar-color: var(--scroll-thumb) transparent;
-  scrollbar-width: auto;
 }
 
 .select2-container--default .select2-selection--single .select2-selection__arrow {

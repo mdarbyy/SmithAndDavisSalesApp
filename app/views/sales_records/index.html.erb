@@ -12,6 +12,7 @@
       </form>
     </div>
   </div>
+
   <div class="card m-1 p-2" id="content-main">
     <div class="scrollable-table">
       <% if @sales_records.present? and @sales_records.count > 0 %>
@@ -59,6 +60,7 @@
     </div>
   </div>
 </div>
+
 <script>
   var isLoading = false;
   $(".scrollable-table").scroll(function() {

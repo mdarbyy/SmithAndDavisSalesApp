@@ -77,7 +77,6 @@
 
     <%= javascript_importmap_tags %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-
   </head>
 
   <body>
@@ -256,7 +255,6 @@
 
       document.getElementById("modalDeleteConfirmButton").onclick = (e) =>
         deleteUser(e, true);
-
       return;
     }
 
@@ -269,7 +267,6 @@
   function deleteEntity(event, confirmDelete = false) {
     event.preventDefault();
 
-    // Step 1: First click → Open modal
     if (!confirmDelete) {
       deleteButtonStored = event.currentTarget;
 
@@ -281,17 +278,15 @@
       const modal = new bootstrap.Modal(document.getElementById("deleteConfirmModal"));
       modal.show();
 
-      // When modal delete is clicked → call *this same function again*
       document.getElementById("modalDeleteConfirmButton").onclick = (e) =>
         deleteEntity(e, true);
-      return; // prevent delete until confirmed
+      return;
     }
 
     const modalEl = document.getElementById("deleteConfirmModal");
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) modalInstance.hide();
 
-    // Step 2: User confirmed → do the delete
     const button = deleteButtonStored;
     deleteButtonStored = null;
 
@@ -430,7 +425,6 @@
   }
 
   $('th').click(function() {
-    
     // skip if this <th> is inside a modal
     if ($(this).closest('.modal').length > 0) {
       return;

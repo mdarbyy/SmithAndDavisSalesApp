@@ -12,8 +12,10 @@
       </select>
     </div>
   </div>
+
   <%= form.hidden_field :sales_person_id, id:"hidden_sales_person" %>
   <%= form.hidden_field :sell_date, id:"hidden_sell_date" %>
+
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-12">
       <label class="col-form-label"><strong>Sell Date</strong></label>
@@ -26,12 +28,14 @@
       </div>
     </div>
   </div>
+
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-12">
       <label class="col-form-label"><strong>Amount Sold</strong></label>
       <%= form.number_field :amount_sold, step: 1, class: "form-control", id:"amount_sold" %>
     </div>
   </div>
+
   <div class="row g-3 mb-3 align-items-center">
     <div class="col-6">
       <label class="col-form-label"><strong>Sales Floor Hours</strong></label>
@@ -42,6 +46,7 @@
       <%= form.number_field :project_hours, placeholder: 0, step: :any, class: "form-control", id:"project_hours" %>
     </div>
   </div>
+  
   <div class="row" id="submit_btn_row" style="display: none;">
     <div class="col-12 d-flex justify-content-end">
       <%= submit_tag 'Submit', class: 'btn btn-main', id: 'submit_button', onclick:"show_spinner()", data: { turbo: false } %>

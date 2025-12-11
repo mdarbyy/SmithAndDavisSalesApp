@@ -8,5 +8,4 @@ class ApplicationController < ActionController::Base
     flash[:danger] = "You must be logged in to access the app"
     redirect_to new_user_session_path
   end
-
 end
