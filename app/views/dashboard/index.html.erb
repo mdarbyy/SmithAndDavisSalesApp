@@ -294,6 +294,9 @@
       }
 
       function processSalesRecords(){
+        const round2 = n =>
+        Math.round((Number(n) + Number.EPSILON) * 100) / 100;
+        
         const filteredRecords = getFilteredSalesRecords();
         const totalsByPerson = {};
         const grandTotals = {
@@ -319,8 +322,8 @@
           };
 
           const amountSold = Number(record.amount_sold);
-          const salesFloorHours = Number(record.sales_floor_hours);
-          const projectHours = Number(record.project_hours);
+          const salesFloorHours = round2(record.sales_floor_hours);
+          const projectHours = round2(record.project_hours);
 
           totalsByPerson[personId].records[sellDate] = {
             amountSold,
@@ -626,8 +629,7 @@
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
-            const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '---';
-
+            const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '0';
             const row = ws.addRow([
               rank,
               name,
