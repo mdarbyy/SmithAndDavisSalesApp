@@ -605,7 +605,7 @@
           avgCell.alignment = { horizontal: 'center', vertical: 'middle' };
 
           // --- Spacer (row 4)
-          ws.addRow([]);
+          ws.mergeCells('A4:H4');
 
           // --- Header (row 5)
           const headerRow = ws.addRow([
