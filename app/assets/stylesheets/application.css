@@ -305,6 +305,17 @@ input.form-control.datepicker {
   margin-top: 10px;
 }
 
+.log-in-link, .log-in-link:visited {
+  color: #1b93dd;
+  outline: none;
+  text-decoration: none;
+}
+
+.log-in-link:hover {
+  color: #1472ac;
+  text-decoration: none;
+}
+
 .main-content {
   scrollbar-width: none;
   padding-top: 70px;          

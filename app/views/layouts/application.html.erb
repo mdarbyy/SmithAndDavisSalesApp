@@ -174,7 +174,6 @@
         <div class="form-section scrollable-form">
           <div id="alertContainerUnauthenticated"></div>
           <div class="form-container">
-            <h4>Smith & Davis Sales App</h4>
             <%= yield %>
           </div>
         </div>
@@ -477,10 +476,10 @@
   });
 
   <% if flash[:success] %>
-    alertMessage('<%= j flash[:success] %>','SUCCESS', 1000);
+    alertMessage('<%= j flash[:success] %>','SUCCESS', 1500);
   <% elsif flash[:danger] %>
     alertMessage('<%= j flash[:danger] %>','DANGER', 2000);
   <% elsif flash[:notice] %>
-    alertMessage('<%= j flash[:notice] %>','INFO', 1000);
+    alertMessage('<%= j flash[:notice] %>','INFO', 1500);
   <% end %>
 </script>

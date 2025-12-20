@@ -5,7 +5,8 @@ Rails.application.routes.draw do
     :users,
     controllers: {
       sessions: 'users/sessions',
-      registrations: 'users/registrations'
+      registrations: 'users/registrations',
+      passwords: 'users/passwords'
     },
     path: 'users',
     path_names: { sign_in: 'sign_in', sign_out: 'sign_out' }
