@@ -11,6 +11,8 @@ class Users::SessionsController < Devise::SessionsController
     user = User.find_by(email: sign_in_params[:email])
 
     if user && user.valid_password?(sign_in_params[:password])
+      user.last_logged_in = DateTime.now
+      user.save
       flash[:success] = "Welcome, #{user.first_name}"
       sign_in_and_redirect user, event: :authentication
     else

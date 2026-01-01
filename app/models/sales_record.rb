@@ -1,6 +1,25 @@
 class SalesRecord < ApplicationRecord
   belongs_to :sales_person
+  
   validates :sell_date, presence: true
+
+  MAX_AMOUNT_SOLD = 20000
+  FORMATTED_MAX_AMOUNT_SOLD = ActionController::Base.helpers.number_with_delimiter(MAX_AMOUNT_SOLD)
+  validates :amount_sold,
+  numericality: {
+    only_integer: true,
+    less_than_or_equal_to: MAX_AMOUNT_SOLD,
+    message: "must be less than or equal to #{FORMATTED_MAX_AMOUNT_SOLD}"
+  }
+
+  MAX_HOURS = 24
+  FORMATTED_MAX_HOURS = ActionController::Base.helpers.number_with_delimiter(MAX_HOURS)
+  validates :sales_floor_hours, :project_hours,
+  numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: MAX_HOURS,
+    message: "must be less than or equal to #{FORMATTED_MAX_HOURS}"
+  }
 
   before_save :ensure_fields_filled
   before_save :ensure_unique_sales_record

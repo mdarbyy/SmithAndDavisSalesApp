@@ -153,7 +153,7 @@
                       </a>
                       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown"> 
                         <li>
-                          <%= link_to "Profile", edit_user_path(current_user), class: "dropdown-item nav-link" %>
+                          <%= link_to "Profile", edit_user_path(current_user), class: "dropdown-item nav-link dashboard-link" %>
                         </li>
                         <li>
                           <%= button_to "Log Out", destroy_user_session_path, method: :delete, class: "dropdown-item nav-link" %>

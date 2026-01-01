@@ -1,12 +1,13 @@
 class SalesPerson < ApplicationRecord
+  has_many :sales_records
+  
   validate :unique_sales_person
   validates :first_name, presence: true
   validates :last_name, presence: true
-  before_create :capitalize_sales_person
-  before_update :capitalize_sales_person
-  before_destroy :find_records
-  has_many :sales_records
 
+  before_save :capitalize_sales_person
+  before_destroy :find_records
+  
   private 
   
   def capitalize_sales_person

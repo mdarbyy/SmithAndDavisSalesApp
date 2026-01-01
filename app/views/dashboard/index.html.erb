@@ -135,7 +135,7 @@
             </select>
           </div>
           
-          <div class="d-flex flex-column align-items-center" id="sellDateFilter">
+          <div class="d-flex flex-column align-items-center">
             <select id="sell-date-filter"
               class="selectpicker btn-secondary filter-select"
               multiple
@@ -297,7 +297,10 @@
         const round2 = n =>
         Math.round((Number(n) + Number.EPSILON) * 100) / 100;
         
+        //look at the selectors and get records for the selected sales people and sell dates
         const filteredRecords = getFilteredSalesRecords();
+        
+        //define the object to store the data for the graph and excel file
         const totalsByPerson = {};
         const grandTotals = {
           amountSold: 0,
@@ -305,6 +308,16 @@
           projectHours: 0,
           avgPerHour: 0
         };
+
+        /*
+        1. loop over each record from the filters and define an object for each sales person if they do not exist
+
+        2. get the amount sold, sales floor hours, and project hours stored in the record. inside
+        the object there is a records array. create a object in the records array for that sell date
+        and store the values.
+
+        3. add the amount sold, sales floor hours, and project hours to that sales persons totals as well as the grand total 
+        */
 
         filteredRecords.forEach(record => {
           const personId = record.sales_person_id;
@@ -340,6 +353,8 @@
           grandTotals.projectHours += projectHours;
         });
 
+        /* 4. after looping over the records loop over each person in the totalsByPerson object and calculate their average */
+
         Object.values(totalsByPerson).forEach(person => {
           const totals = person.totals;
           person.avgPerHour =
@@ -348,10 +363,15 @@
               : 0;
         });
 
+        /* 5. calculate the grand total average per hour by dividing the grand total amount sold by the grand total sales floor hours */
+
         grandTotals.avgPerHour = grandTotals.salesFloorHours > 0
         ? Number((grandTotals.amountSold / grandTotals.salesFloorHours).toFixed(2))
         : 0;
 
+        /* 6. with each persons average calculated created the filteredData by mapping the values needed for the bar graph and create the Highcharts bar graph
+        */
+        
         console.log("Totals by Person:", totalsByPerson);
         console.log("Grand Totals:", grandTotals);
 
@@ -373,6 +393,7 @@
           }
         }));
 
+        //function to show modal with a sales persons records when clicking on a bar on the graph
         function showSalesForClickedPerson(clickedName){
           const salesPersonId = Object.keys(salesPersonIdToName).find(
             id => salesPersonIdToName[id] === clickedName
@@ -403,7 +424,7 @@
             const row = document.createElement('tr');
             row.innerHTML = `
               <td>${formattedDate}</td>
-              <td>$${dailyTotal.toLocaleString()}</td>
+              <td>$${formatNumber(dailyTotal)}</td>
               <td>${dailySalesHours.toLocaleString()}</td>
               <td>$${formatNumber(dailyAvgRaw)}</td>
               <td>${dailyProjectHours.toLocaleString()}</td>
@@ -424,7 +445,7 @@
             const totalRow = document.createElement('tr');
             totalRow.innerHTML = `
               <td><strong>Total</strong></td>
-              <td><strong>$${personData.totals.amountSold.toLocaleString()}</strong></td>
+              <td><strong>$${formatNumber(personData.totals.amountSold)}</strong></td>
               <td><strong>${personData.totals.salesFloorHours.toLocaleString()}</strong></td>
               <td><strong>$${formatNumber(personData.avgPerHour)}</strong></td>
               <td><strong>${personData.totals.projectHours.toLocaleString()}</strong></td>
@@ -471,7 +492,7 @@
             text: `
               <div style="text-align: center;">
                 <div style="font-size: 18px; font-weight: bold; color: #333;">
-                  $${grandTotals.amountSold.toLocaleString()}
+                  $${formatNumber(grandTotals.amountSold)}
                 </div>
                 ${grandTotals.avgPerHour > 0 ? `
                   <div style="font-size: 14px; font-weight: bold; color: ${avgColor};">
@@ -479,7 +500,8 @@
                   </div>
                 ` : `<div style="font-size: 14px; font-weight: bold; color: ${avgColor};">
                     $0/hr
-                  </div>`}
+                  </div>`
+                  }
               </div>
             `
           },
@@ -511,24 +533,22 @@
               overflow: 'none',
               useHTML: true,
               formatter: function() {
-                const sales = '$' + Highcharts.numberFormat(this.y, 0, '.', ',');
+                const sales = '$' + formatNumber(this.y);
                 const sales_hours = this.point.custom?.sales_hours || 0;
                 const project_hours = this.point.custom?.project_hours || 0;
                 const avg = this.point.custom?.avg || 0;
 
-                let labelString = `<div style="text-align: center;">
-                  <div>${sales}</div>
-                  <div>$0/hr</div>
-                </div>`;
+                const hourlyRate =
+                  avg > 0 ? `$${formatNumber(avg)}/hr` : `$0/hr`;
 
-                if(avg > 0){
-                  labelString = `<div style="text-align: center;">
+                const labelString = `
+                  <div style="text-align: center;">
                     <div>${sales}</div>
                     <div style="font-size: 12px; color: ${avgColor};">
-                      $${formatNumber(avg)}/hr
+                      ${hourlyRate}
                     </div>
-                  </div>`;
-                }
+                  </div>
+                `;
                 
                 return labelString;
                 },
@@ -549,6 +569,7 @@
           }
         });
 
+        //when the export to excel button is clicked
         $('#export-sales-chart').off('click').on('click', async () => {
           const startDate = "<%= @start_date.strftime('%m/%d/%Y') %>";
           const endDate = "<%= @end_date.strftime('%m/%d/%Y') %>";
@@ -626,6 +647,11 @@
           headerRow.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
           headerRow.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
 
+          /* 
+            loop over the data that is sorted by the amount sold and fill out the excel file
+            style the Rank columns to be the red color
+          */
+
           let rank = 1;
           sortedBySales.forEach(personData => {
             const { name, totals } = personData;
@@ -641,7 +667,6 @@
               null
             ]);
 
-            // style Rank cells (A & F)
             row.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
             row.alignment = { horizontal: 'center', vertical: 'middle' };
@@ -649,7 +674,9 @@
             rank++;
           });
 
-          // Data rows start at row 6
+          /*
+            loop over the data that is sorted by the highest average and enter those into columns G and H
+          */
           sortedByAvg.forEach((p, i) => {
             const rowIndex = i + 6;
             const avgVal = p.avgPerHour;
@@ -664,6 +691,10 @@
             ws.getCell(rowIndex, 8).alignment = { horizontal: 'center', vertical: 'middle' };
           });
 
+          /*
+            lastly, take the sales people who are active employees that have not sold anything and enter them into the excel file alphabetically
+          */
+          
           salesPeopleWithoutSales.sort((a, b) => {
             const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
             const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();

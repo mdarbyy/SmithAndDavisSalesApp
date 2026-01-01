@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
   before_action :set_user, only: [:show, :edit, :update, :destroy]
-
+  
   def index
     @users = User.all.order(email: :asc)
 
@@ -57,6 +57,6 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name, :show_export_buttons) 
+    params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name, :last_logged_in) 
   end
 end
