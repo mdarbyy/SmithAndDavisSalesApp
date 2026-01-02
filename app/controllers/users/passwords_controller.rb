@@ -18,6 +18,7 @@ class Users::PasswordsController < Devise::PasswordsController
 
     if resource.errors.empty?
       resource.unlock_access! if unlockable?(resource)
+      resource.update!(last_logged_in: Time.current)
       flash[:success] = "Your password has been updated"
       sign_in(resource_name, resource)
       redirect_to root_path

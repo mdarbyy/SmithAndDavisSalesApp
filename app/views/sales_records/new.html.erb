@@ -4,18 +4,18 @@
 			<div class="col-3">
 				<%= link_to 'Cancel', sales_records_path, class: 'btn btn-main btn-left' %>
 			</div>
-			<div class="col-5 d-flex justify-content-center">
+			<div class="col-6 d-flex justify-content-center">
 				<h1>New Sales Record</h1>
 			</div>
-			<div class="col-2">
+			<div class="col-3 d-flex justify-content-end">
 			</div>
 		</div>
 	</div>
 
-	<div class="card m-1" id="content-main" style="position: relative;">
+	<div class="card m-1" id="content-main">
 		<div class="card-body scrollable-form">
 			<div class="row justify-content-center">
-				<div class="col-12 col-md-10 col-lg-8">
+				<div class="col-12 col-md-8 col-lg-6">
 					<%= render 'form', sales_record: @sales_record %>
 				</div>
 			</div>
