@@ -210,6 +210,14 @@
       const salesPeople = <%= raw @sales_people.to_json %>;
       const salesPeopleWithoutSales = <%= raw @sales_people_without_sales.to_json %>;
 
+      salesPeopleWithoutSales.sort((a, b) => {
+        const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
+        const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
+        if (nameA < nameB) return -1;
+        if (nameA > nameB) return 1;
+        return 0;
+      });
+
     	console.log("Sales Records:", salesRecords);
     	console.log("Sales People:", salesPeople);
       console.log("Sales People Without Sales: " + salesPeopleWithoutSales);
@@ -219,6 +227,11 @@
     		const name = `${sp.first_name} ${sp.last_name}`.trim().replace(/\s+/g, ' ');
     		salesPersonIdToName[sp.id] = name;
     	});
+
+      salesPeopleWithoutSales.forEach(sp => {
+        const name = `${sp.first_name} ${sp.last_name}`.trim().replace(/\s+/g, ' ');
+    		salesPersonIdToName[sp.id] = name;
+      });
 
       function addPadding(row){
         row.style.paddingTop = "10px";
@@ -310,13 +323,13 @@
         };
 
         /*
-        1. loop over each record from the filters and define an object for each sales person if they do not exist
+          1. loop over each record from the filters and define an object for each sales person if they do not exist
 
-        2. get the amount sold, sales floor hours, and project hours stored in the record. inside
-        the object there is a records array. create a object in the records array for that sell date
-        and store the values.
+          2. get the amount sold, sales floor hours, and project hours stored in the record. inside
+          the object there is a records array. create a object in the records array for that sell date
+          and store the values.
 
-        3. add the amount sold, sales floor hours, and project hours to that sales persons totals as well as the grand total 
+          3. add the amount sold, sales floor hours, and project hours to that sales persons totals as well as the grand total 
         */
 
         filteredRecords.forEach(record => {
@@ -353,7 +366,29 @@
           grandTotals.projectHours += projectHours;
         });
 
-        /* 4. after looping over the records loop over each person in the totalsByPerson object and calculate their average */
+        /*
+          4. add in the active sales people who did not sell anything so they show up on the graph
+        */
+
+        const selectedSalesPersonIds = $('#sales-person-filter').val() || [];
+
+        salesPeopleWithoutSales.forEach(sp =>{
+          if(selectedSalesPersonIds.includes(String(sp.id))){
+            if (!totalsByPerson[sp.id]) totalsByPerson[sp.id] = { name: sp.first_name + " " + sp.last_name,
+            records: {},
+              totals: {
+                amountSold: 0,
+                salesFloorHours: 0,
+                projectHours: 0
+              },
+              avgPerHour: 0
+            };
+          }
+        });
+
+        /* 
+          5. after looping over the records loop over each person in the totalsByPerson object and calculate their average 
+        */
 
         Object.values(totalsByPerson).forEach(person => {
           const totals = person.totals;
@@ -363,13 +398,16 @@
               : 0;
         });
 
-        /* 5. calculate the grand total average per hour by dividing the grand total amount sold by the grand total sales floor hours */
+        /*
+          6. calculate the grand total average per hour by dividing the grand total amount sold by the grand total sales floor hours 
+        */
 
         grandTotals.avgPerHour = grandTotals.salesFloorHours > 0
         ? Number((grandTotals.amountSold / grandTotals.salesFloorHours).toFixed(2))
         : 0;
 
-        /* 6. with each persons average calculated created the filteredData by mapping the values needed for the bar graph and create the Highcharts bar graph
+        /* 
+          7. with each persons average calculated created the filteredData by mapping the values needed for the bar graph and create the Highcharts bar graph
         */
         
         console.log("Totals by Person:", totalsByPerson);
@@ -380,8 +418,23 @@
           totalSales: p.totals.amountSold,
           totalSalesHours: p.totals.salesFloorHours,
           totalProjectHours: p.totals.projectHours,
-          avgPerHour: p.avgPerHour
-        })).sort((a, b) => b.totalSales - a.totalSales);
+          avgPerHour: p.avgPerHour,
+          hasRecords: p.records && Object.keys(p.records).length > 0
+        })).sort((a, b) => {
+          
+          // total sales
+          if (b.totalSales !== a.totalSales) {
+            return b.totalSales - a.totalSales;
+          }
+
+          // has records (true first)
+          if (a.hasRecords !== b.hasRecords) {
+            return b.hasRecords - a.hasRecords;
+          }
+
+          // name (ascending)
+          return a.name.localeCompare(b.name);
+        });
 
         const categories = filteredData.map(p => p.name);
         const data = filteredData.map(p => ({
@@ -389,7 +442,8 @@
           custom: {
             sales_hours: p.totalSalesHours,
             project_hours: p.totalProjectHours,
-            avg: p.avgPerHour
+            avg: p.avgPerHour,
+            hasRecords: p.hasRecords
           }
         }));
 
@@ -400,8 +454,10 @@
           );
 
           const personData = totalsByPerson[salesPersonId];
-
           if (!personData) return;
+
+          //return if this person has no records
+          if (Object.keys(personData.records).length === 0) return;
 
           const recordsByDate = personData.records;
           const tbody = document.querySelector('#totalSalesModalTableBody');
@@ -537,18 +593,28 @@
                 const sales_hours = this.point.custom?.sales_hours || 0;
                 const project_hours = this.point.custom?.project_hours || 0;
                 const avg = this.point.custom?.avg || 0;
+                const hasRecords = this.point.custom?.hasRecords;
 
-                const hourlyRate =
+                let labelString = '';
+                if(hasRecords){
+                  const hourlyRate =
                   avg > 0 ? `$${formatNumber(avg)}/hr` : `$0/hr`;
 
-                const labelString = `
-                  <div style="text-align: center;">
-                    <div>${sales}</div>
-                    <div style="font-size: 12px; color: ${avgColor};">
-                      ${hourlyRate}
+                  labelString = `
+                    <div style="text-align: center;">
+                      <div>${sales}</div>
+                      <div style="font-size: 12px; color: ${avgColor};">
+                        ${hourlyRate}
+                      </div>
                     </div>
-                  </div>
-                `;
+                  `;
+                } else {
+                  labelString = `
+                    <div style="text-align: center;">
+                      <div>---</div>
+                    </div>
+                  `;
+                }
                 
                 return labelString;
                 },
@@ -654,37 +720,49 @@
 
           let rank = 1;
           sortedBySales.forEach(personData => {
-            const { name, totals } = personData;
-            const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '0';
-            const row = ws.addRow([
-              rank,
-              name,
-              amountSold,
-              totals.salesFloorHours,
-              totals.projectHours,
-              rank,
-              null,
-              null
-            ]);
+            const { name, totals, records } = personData;
+            
+            if(records && Object.keys(records).length > 0){
+              const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : 0;
+            
+              const row = ws.addRow([
+                rank,
+                name,
+                amountSold,
+                totals.salesFloorHours,
+                totals.projectHours,
+                rank,
+                null,
+                null
+              ]);
 
-            row.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
-            row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
-            row.alignment = { horizontal: 'center', vertical: 'middle' };
+              row.getCell(1).font = { bold: true, color: { argb: 'FFA8504B' } };
+              row.getCell(6).font = { bold: true, color: { argb: 'FFA8504B' } };
+              row.alignment = { horizontal: 'center', vertical: 'middle' };
 
-            rank++;
+              rank++;
+            }
           });
 
           /*
+            filter the sales people to show ones with sales records only
+            
             loop over the data that is sorted by the highest average and enter those into columns G and H
           */
-          sortedByAvg.forEach((p, i) => {
+
+          const withRecords = sortedByAvg.filter(
+            p => p.records && Object.keys(p.records).length > 0
+          );
+
+          withRecords.forEach((p, i) => {
             const rowIndex = i + 6;
             const avgVal = p.avgPerHour;
+
             ws.getCell(rowIndex, 7).value = p.name;
             if(avgVal > 0){
               ws.getCell(rowIndex, 8).value = `$${formatNumber(avgVal)}`;
             } else {
-              ws.getCell(rowIndex, 8).value = `---`;
+              ws.getCell(rowIndex, 8).value = `$0`;
             }
 
             ws.getCell(rowIndex, 7).alignment = { horizontal: 'center', vertical: 'middle' };
@@ -694,14 +772,6 @@
           /*
             lastly, take the sales people who are active employees that have not sold anything and enter them into the excel file alphabetically
           */
-          
-          salesPeopleWithoutSales.sort((a, b) => {
-            const nameA = `${a.first_name} ${a.last_name}`.toLowerCase();
-            const nameB = `${b.first_name} ${b.last_name}`.toLowerCase();
-            if (nameA < nameB) return -1;
-            if (nameA > nameB) return 1;
-            return 0;
-          });
 
           salesPeopleWithoutSales.forEach(person => {
             const row = ws.addRow([
@@ -726,7 +796,7 @@
 
             rank++; // increment rank for next row
           });
-
+          
           const widths = [10, 25, 20, 20, 20, 10, 25, 20];
           widths.forEach((w, i) => (ws.getColumn(i + 1).width = w));
 
