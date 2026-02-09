@@ -723,7 +723,7 @@
             const { name, totals, records } = personData;
             
             if(records && Object.keys(records).length > 0){
-              const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : 0;
+              const amountSold = totals.amountSold > 0 ? '$' + formatNumber(totals.amountSold) : '$0';
             
               const row = ws.addRow([
                 rank,
