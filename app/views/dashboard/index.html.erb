@@ -603,7 +603,7 @@
                 if(hasRecords){
                   const hourlyRate =
                   avg > 0 ? `$${formatNumber(avg)}/hr` : `$0/hr`;
-                  const salesHours = sales_hours == 1 ? `${sales_hours} hour` : `${sales_hours} hours`;
+                  const salesHours = sales_hours == 1 ? `${sales_hours} hour` : `${formatNumber(sales_hours)} hours`;
 
                   labelString = `
                     <div style="text-align: center;">
