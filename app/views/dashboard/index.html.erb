@@ -206,6 +206,10 @@
       .getPropertyValue('--bargraph-avg-color')
       .trim();
 
+      const hourColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--bargraph-hour-color')
+      .trim();
+
       const salesRecords = <%= raw @sales_records.to_json %>;
       const salesPeople = <%= raw @sales_people.to_json %>;
       const salesPeopleWithoutSales = <%= raw @sales_people_without_sales.to_json %>;
@@ -599,10 +603,12 @@
                 if(hasRecords){
                   const hourlyRate =
                   avg > 0 ? `$${formatNumber(avg)}/hr` : `$0/hr`;
+                  const salesHours = sales_hours == 1 ? `${sales_hours} hour` : `${sales_hours} hours`;
 
                   labelString = `
                     <div style="text-align: center;">
                       <div>${sales}</div>
+                      <div style="font-size: 12px; color: ${hourColor};">${salesHours}</div>
                       <div style="font-size: 12px; color: ${avgColor};">
                         ${hourlyRate}
                       </div>

@@ -4,6 +4,7 @@
   --delete-color: #a8504b;
   --delete-hover-color: #964642;
   --bargraph-avg-color: #1472ac;
+  --bargraph-hour-color: grey;
 }
 
 html, body {
