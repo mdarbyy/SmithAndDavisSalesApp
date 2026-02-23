@@ -494,8 +494,6 @@
 
           // Only show totals if more than one unique date
           if (sortedRecords.length > 1) {
-            const overallAvg = personData.totals.salesFloorHours > 0 ? (personData.totals.amountSold / personData.totals.salesFloorHours).toFixed(2) : 0;
-
             let spaceRowBefore = document.createElement('tr');
             spaceRowBefore.innerHTML = `
             <td colspan="6"></td>
@@ -512,12 +510,6 @@
             `;
             tbody.appendChild(totalRow);
             addPadding(totalRow);
-
-            let spaceRowAfter = document.createElement('tr');
-            spaceRowAfter.innerHTML = `
-            <td colspan="6"></td>
-            `;
-            tbody.appendChild(spaceRowAfter);
           }
 
           const modal = new bootstrap.Modal(document.getElementById('totalSalesModal'));
