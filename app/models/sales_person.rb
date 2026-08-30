@@ -5,19 +5,21 @@ class SalesPerson < ApplicationRecord
   validates :first_name, presence: true
   validates :last_name, presence: true
 
-  before_save :capitalize_sales_person
+  before_save :capitalize_names
   before_destroy :find_records
   
   private 
   
-  def capitalize_sales_person
-    if first_name.present?
-      self.first_name = first_name.strip.split.map(&:capitalize).join(" ")
-    end
+  def capitalize_names
+    self.first_name = capitalize_name(first_name) if first_name.present?
+    self.last_name = capitalize_name(last_name) if last_name.present?
+  end
 
-    if last_name.present?
-      self.last_name = last_name.strip.split.map(&:capitalize).join(" ")
-    end
+  def capitalize_name(name)
+    name.strip.split.map do |part|
+      part[0] = part[0].upcase
+      part
+    end.join(" ")
   end
   
   def find_records
