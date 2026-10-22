@@ -11,7 +11,7 @@
     <div class="d-flex align-items-center">  
       <% if sales_person.sales_records.present? %>
         <%= button_to 'View Sales Records', sales_person_path(sales_person),
-        method: :get, data: { turbo: false }, class: 'btn btn-main mt-0' %>
+        method: :get, data: { turbo: false }, class: 'btn btn-main mt-0', onclick:"show_spinner()" %>
       <% else %>
         <button class="btn btn-delete" type="button"
           data-entity="sales_people"
