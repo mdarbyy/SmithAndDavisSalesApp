@@ -128,6 +128,17 @@ th:hover {
   overflow-y: hidden;
 }
 
+#totalSalesModalTableFoot tr {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+}
+
+#totalSalesModalTableFoot td {
+  background-color: white;
+  border-top: 2px solid #dee2e6;
+}
+
 .authenticated {
   background: white;
   background-attachment: fixed;

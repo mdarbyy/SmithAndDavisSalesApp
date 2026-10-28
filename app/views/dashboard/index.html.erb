@@ -80,6 +80,8 @@
               </thead>
               <tbody id="totalSalesModalTableBody">
               </tbody>
+              <tfoot id="totalSalesModalTableFoot">
+              </tfoot>
             </table>
           </div>
         </div>
@@ -465,7 +467,9 @@
 
           const recordsByDate = personData.records;
           const tbody = document.querySelector('#totalSalesModalTableBody');
+          const tfoot = document.querySelector('#totalSalesModalTableFoot');
           tbody.innerHTML = '';
+          tfoot.innerHTML = '';
 
           document.getElementById('salesPersonName').textContent = clickedName;
 
@@ -494,12 +498,6 @@
 
           // Only show totals if more than one unique date
           if (sortedRecords.length > 1) {
-            let spaceRowBefore = document.createElement('tr');
-            spaceRowBefore.innerHTML = `
-            <td colspan="6"></td>
-            `;
-            tbody.appendChild(spaceRowBefore);
-
             const totalRow = document.createElement('tr');
             totalRow.innerHTML = `
               <td><strong>Total</strong></td>
@@ -508,10 +506,10 @@
               <td><strong>$${formatNumber(personData.avgPerHour)}</strong></td>
               <td><strong>${personData.totals.projectHours.toLocaleString()}</strong></td>
             `;
-            tbody.appendChild(totalRow);
+            tfoot.appendChild(totalRow);
             addPadding(totalRow);
           }
-
+          
           const modal = new bootstrap.Modal(document.getElementById('totalSalesModal'));
           modal.show();
         }
