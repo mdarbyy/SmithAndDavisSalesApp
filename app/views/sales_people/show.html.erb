@@ -56,13 +56,52 @@
     </div>
 
     <div style="text-align: center;" id="recordCount">
-      <b>
-        Displaying <span id="currentCount"></span> 
-        <span id="recordLabel"
-          data-singular="Sales Record"
-          data-plural="Sales Records">
-        </span>
-      </b>
+      <b>Displaying <span id="currentCount">0</span> of <span id="totalCount"><%= number_with_delimiter(@total_records) %></span> Sales Records</b>
     </div>
   </div>
 </div>
+
+
+<script>
+  var isLoading = false;
+  $(".scrollable-table").scroll(function() {
+    var totalRecords  = Number($('#totalCount').text().replace(/,/g, ''));
+    var currentCount  = Number($('#currentCount').text().replace(/,/g, ''));
+
+    if (currentCount < totalRecords) {
+      if ($(".scrollable-table").scrollTop() >= $("#content-table").height() - $(".scrollable-table").height() && !isLoading) {
+        loadMoreRecords();
+      }
+    }
+  });
+
+  function loadMoreRecords() {
+    if (isLoading) return;
+    console.log("Loading Sales Records");
+    const currentVisibleCount = $('#content-table tbody tr').length;
+
+    $.ajax({
+      url: "<%= @sales_person.id %>",
+      data: { offset: currentVisibleCount },
+      type: 'GET',
+      dataType: 'script',
+      cache: true,
+      beforeSend: function(){
+        isLoading = true;
+        $("#loading-spinner").show();
+      },
+      success: function(data) {
+        console.log("Loaded Sales Records");
+        var rowCount = $('#content-table tbody tr').length;
+        $('#currentCount').text(rowCount);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.error("AJAX Error:", textStatus, errorThrown);
+      },
+      complete: function(){
+        isLoading = false;
+        $("#loading-spinner").hide();
+      }
+    });
+  }
+</script>

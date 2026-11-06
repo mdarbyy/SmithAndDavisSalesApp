@@ -1,16 +1,14 @@
 Rails.application.routes.draw do
   root "dashboard#index"
 
-  devise_for(
-    :users,
-    controllers: {
-      sessions: 'users/sessions',
-      registrations: 'users/registrations',
-      passwords: 'users/passwords'
-    },
-    path: 'users',
-    path_names: { sign_in: 'sign_in', sign_out: 'sign_out' }
-  )
+  devise_for :users,
+  controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations',
+    passwords: 'users/passwords'
+  },
+  path: 'users',
+  path_names: { sign_in: 'sign_in', sign_out: 'sign_out' }
 
   resources :users
   resources :sales_records

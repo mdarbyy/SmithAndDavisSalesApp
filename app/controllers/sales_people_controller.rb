@@ -13,8 +13,14 @@ class SalesPeopleController < ApplicationController
 
   # GET /sales_people/1 or /sales_people/1.json
   def show
-    @sales_records = @sales_person.sales_records.order(sell_date: :desc)
-    
+    @limit = 50
+    offset = params[:offset].to_i || 0
+    @sales_records = @sales_person.sales_records
+    .limit(@limit)
+    .offset(offset)
+    .order(id: :desc)
+    @total_records = @sales_person.sales_records.count
+
     respond_to do |format|
       format.html
       format.js

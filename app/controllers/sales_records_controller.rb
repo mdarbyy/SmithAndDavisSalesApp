@@ -34,7 +34,6 @@ class SalesRecordsController < ApplicationController
 
   # GET /sales_records/1/edit
   def edit
-    session[:return_to] = request.referer
   end
 
   # POST /sales_records or /sales_records.json
